@@ -214,6 +214,149 @@
             
 
   
+    <article id="post-Spark-local" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Spark-local/" target="_blank">Spark(local)</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Spark-local/" class="archive-article-date">
+        <time datetime="2023-06-09T01:03:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Spark（local）"><a href="#Spark（local）" class="headerlink" title="Spark（local）"></a>Spark（local）</h1><p>1、环境变量</p>
+<p>配置Spark由如下5个环境变量需要设置</p>
+<p>-  SPARK_HOME: 表示Spark安装路径在哪里 </p>
+<p>-  PYSPARK_PYTHON: 表示Spark想运行Python程序, 那么去哪里找python执行器 </p>
+<p>-  JAVA_HOME: 告知Spark Java在哪里 </p>
+<p>-  HADOOP_CONF_DIR: 告知Spark Hadoop的配置文件在哪里 </p>
+<p>-  HADOOP_HOME: 告知Spark  Hadoop安装在哪里</p>
+<p>这5个环境变量 都需要配置在: <code>/etc/profile</code>中</p>
+<p><img src="/2023/06/09/Spark-local/wps157.jpg" alt="img"> </p>
+<p>2、安装anaconda</p>
+<p>（1）把资源包Anaconda3-2021.05-Linux-x86_64.sh文件放到文件夹下</p>
+<p><img src="/2023/06/09/Spark-local/wps158.jpg" alt="img"></p>
+<p>（2)运行Anaconda3-2021.05-Linux-x86_64.sh</p>
+<p>sh .&#x2F;Anaconda3-2021.05-Linux-x86_64.sh</p>
+<p><img src="/2023/06/09/Spark-local/wps159.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-local/wps160.jpg" alt="img"> </p>
+<p>（4）安装完成后重启</p>
+<p><img src="/2023/06/09/Spark-local/wps161.jpg" alt="img"> </p>
+<p>3、创建虚拟环境</p>
+<p>（1）创建虚拟环境 pyspark, 基于Python 3.8</p>
+<p>conda activate base</p>
+<p>conda create -n pyspark python&#x3D;3.8</p>
+<p><img src="/2023/06/09/Spark-local/wps162.jpg" alt="img"> </p>
+<p>（2）切换到虚拟环境</p>
+<p>conda activate pyspark</p>
+<p><img src="/2023/06/09/Spark-local/wps163.jpg" alt="img"> </p>
+<p>（3）在虚拟环境内安装包</p>
+<p>pip install pyhive pyspark jieba -i <a target="_blank" rel="noopener" href="https://pypi.tuna.tsinghua.edu.cn/simple">https://pypi.tuna.tsinghua.edu.cn/simple</a></p>
+<p><img src="/2023/06/09/Spark-local/wps164.jpg" alt="img"> </p>
+<p>4、安装spark</p>
+<p>（1）解压spark包</p>
+<p>tar zxvf spark-3.2.0-bin-hadoop3.2.tgz</p>
+<p><img src="/2023/06/09/Spark-local/wps165.jpg" alt="img"> </p>
+<p>（2）设置软链接</p>
+<p>ln -s spark-3.2.0-bin-hadoop3.2&#x2F; spark</p>
+<p><img src="/2023/06/09/Spark-local/wps166.jpg" alt="img"> </p>
+<p>（3）测试</p>
+<p> bin&#x2F;pyspark</p>
+<p>bin&#x2F;pyspark 程序, 可以提供一个  <code>交互式</code>的 Python解释器环境, 在这里面可以写普通python代码, 以及spark代码</p>
+<p><img src="/2023/06/09/Spark-local/wps167.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-local/wps168.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-local/wps169.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-local/wps170.jpg" alt="img"> </p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Spark-local/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -428,6 +571,14 @@
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">搭建</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">spark</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
