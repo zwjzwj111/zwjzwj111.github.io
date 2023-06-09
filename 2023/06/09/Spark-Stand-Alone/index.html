@@ -5,7 +5,7 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://example.com">
+  <link rel="dns-prefetch" href="http://zwjzwj111.github.io">
   <title>Spark(Stand Alone) | Hexo</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -13,42 +13,42 @@
   <meta name="description" content="Spark(Stand Alone)部署Spark Stand Alone环境时，需要用到三台linux虚拟机构成，在此以node1、node2、node3为例 node1运行: Spark的Master进程  和 1个Worker进程 node2运行: spark的1个worker进程 node3运行: spark的1个worker进程 1.安装与配置（此处在node1上操作） （1）三台虚拟机">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spark(Stand Alone)">
-<meta property="og:url" content="http://example.com/2023/06/09/Spark-Stand-Alone/index.html">
+<meta property="og:url" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="Spark(Stand Alone)部署Spark Stand Alone环境时，需要用到三台linux虚拟机构成，在此以node1、node2、node3为例 node1运行: Spark的Master进程  和 1个Worker进程 node2运行: spark的1个worker进程 node3运行: spark的1个worker进程 1.安装与配置（此处在node1上操作） （1）三台虚拟机">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps221.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps222.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps223.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps224.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps225.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps226.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/Spark-Stand-Alonewps227.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps228.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps229.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/ps230.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps231.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps232.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps233.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps234.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps235.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps236.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps237.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps238.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps239.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps240.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps241.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps242.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps243.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps244.jpg">
-<meta property="og:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps245.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps221.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps222.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps223.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps224.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps225.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps226.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/Spark-Stand-Alonewps227.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps228.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps229.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/ps230.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps231.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps232.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps233.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps234.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps235.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps236.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps237.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps238.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps239.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps240.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps241.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps242.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps243.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps244.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps245.jpg">
 <meta property="article:published_time" content="2023-06-09T01:28:36.000Z">
 <meta property="article:modified_time" content="2023-06-09T01:48:04.347Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="搭建">
 <meta property="article:tag" content="spark">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/06/09/Spark-Stand-Alone/wps221.jpg">
+<meta name="twitter:image" content="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/wps221.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -443,7 +443,7 @@
         </li>
         <li>
           <strong>本文链接：</strong>
-          <a href="http://example.com/2023/06/09/Spark-Stand-Alone/" title="Spark(Stand Alone)" target="_blank">http://example.com/2023/06/09/Spark-Stand-Alone/</a>
+          <a href="http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/" title="Spark(Stand Alone)" target="_blank">http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/</a>
         </li>
         
         <li>
@@ -536,7 +536,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2023/06/09/Spark-Stand-Alone/" alt="微信分享二维码"> -->
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://zwjzwj111.github.io/2023/06/09/Spark-Stand-Alone/" alt="微信分享二维码"> -->
     </div>
 </div>
 
@@ -596,7 +596,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018-2023 <a href="http://example.com/" target="_blank">John Doe</a>
+    		&copy; 2018-2023 <a href="http://zwjzwj111.github.io/" target="_blank">John Doe</a>
     	</div>
       	<div class="footer-right">
 			
