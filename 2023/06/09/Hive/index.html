@@ -10,15 +10,40 @@
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:type" content="article">
+  <meta name="description" content="Hive 进入官网下载     上传安装包    3、解压并设置软链接 tar zxvf apache-hive-3.1.2-bin.tar.gz   4、解决hive与hadoop之间guava版本差异 （1）进入hive目录下 cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;   （2）删除hive的lib路径下的guava-19.0.jar   （3）复">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Hive">
-<meta property="og:url" content="http://example.com/2023/06/08/Hive/index.html">
+<meta property="og:url" content="http://example.com/2023/06/09/Hive/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Hive 进入官网下载     上传安装包    3、解压并设置软链接 tar zxvf apache-hive-3.1.2-bin.tar.gz   4、解决hive与hadoop之间guava版本差异 （1）进入hive目录下 cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;   （2）删除hive的lib路径下的guava-19.0.jar   （3）复">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-06-08T14:40:33.000Z">
-<meta property="article:modified_time" content="2023-06-08T14:40:33.183Z">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps53.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps54.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps55.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps56.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps57.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps58.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps59.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps60.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps61.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps62.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps63.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps64.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps65.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps66.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps67.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps68.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps69.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps70.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps71.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps72.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps73.jpg">
+<meta property="og:image" content="http://example.com/2023/06/09/Hive/wps74.jpg">
+<meta property="article:published_time" content="2023-06-09T00:30:35.000Z">
+<meta property="article:modified_time" content="2023-06-09T00:41:53.980Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/06/09/Hive/wps53.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -228,8 +253,8 @@
               <i class="icon-smile icon"></i> 阅读数：<span id="busuanzi_value_page_pv"></span>次
         </span>
 
-<a href="/2023/06/08/Hive/" class="archive-article-date">
-        <time datetime="2023-06-08T14:40:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-08</time>
+<a href="/2023/06/09/Hive/" class="archive-article-date">
+        <time datetime="2023-06-09T00:30:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
 </a>
 
   
@@ -242,7 +267,7 @@
       <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
       <i class="icon-statistics"></i>
       <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">0字</span>
+      <span class="post-count">500字</span>
     </span>
   </span>
 
@@ -251,7 +276,7 @@
     <span class="post-meta-item-icon">
       <i class="icon-book icon"></i>
       <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">1分</span>
+      <span class="post-count">2分</span>
     </span>
   </span>
 </div>
@@ -262,7 +287,146 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    
+    <h1 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h1><ol>
+<li>进入官网下载</li>
+</ol>
+<p><img src="/2023/06/09/Hive/wps53.jpg" alt="img"> </p>
+<ol start="2">
+<li>上传安装包</li>
+</ol>
+<p><img src="/2023/06/09/Hive/wps54.jpg" alt="img"> </p>
+<p>3、解压并设置软链接</p>
+<p>tar zxvf apache-hive-3.1.2-bin.tar.gz</p>
+<p><img src="/2023/06/09/Hive/wps55.jpg" alt="img"> </p>
+<p>4、解决hive与hadoop之间guava版本差异</p>
+<p>（1）进入hive目录下</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;</p>
+<p><img src="/2023/06/09/Hive/wps56.jpg" alt="img"> </p>
+<p>（2）删除hive的lib路径下的guava-19.0.jar</p>
+<p><img src="/2023/06/09/Hive/wps57.jpg" alt="img"> </p>
+<p>（3）复制hadoop的guava-27.0-jre.jar到hive的lib下</p>
+<p>cp&#x2F;export&#x2F;server&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;common&#x2F;lib&#x2F;guava-27.0-jre.jar .&#x2F;lib&#x2F;</p>
+<p><img src="/2023/06/09/Hive/wps58.jpg" alt="img">5.修改配置文件</p>
+<p>（1）hive-env.sh</p>
+<p>进入hive的conf路径下</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;con</p>
+<p>移动hive-env.sh.template到hive-env.sh</p>
+<p>mv hive-env.sh.template hive-env.sh</p>
+<p><img src="/2023/06/09/Hive/wps59.jpg" alt="img"> </p>
+<p>编辑hive-env.sh</p>
+<p>vim hive-env.sh</p>
+<p>在尾部加入</p>
+<p>export HADOOP_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;hadoop</p>
+<p>export HIVE_CONF_DIR&#x3D;&#x2F;export&#x2F;server&#x2F;hive&#x2F;conf</p>
+<p>export HIVE_AUX_JARS_PATH&#x3D;&#x2F;export&#x2F;server&#x2F;hive&#x2F;lib</p>
+<p><img src="/2023/06/09/Hive/wps60.jpg" alt="img"> </p>
+<p>（2）hive-site.xml</p>
+<p>vim hive-site.xml</p>
+<p>加入</p>
+<configuration>
+
+<!-- 存储元数据mysql相关配置 -->
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionURL</name></p>
+<p>​	<value>jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;hive3?createDatabaseIfNotExist&#x3D;true&amp;useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8</value></p>
+</property>
+
+ 
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionDriverName</name></p>
+<p>​	<value>com.mysql.jdbc.Driver</value></p>
+</property>
+
+ 
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionUserName</name></p>
+<p>​	<value>root</value></p>
+</property>
+
+ 
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionPassword</name></p>
+<p>​	<value>hadoop</value></p>
+</property>
+
+ 
+
+<!-- H2S运行绑定host -->
+
+<property>
+
+<p>  <name>hive.server2.thrift.bind.host</name></p>
+<p>  <value>node1</value></p>
+</property>
+
+ 
+
+<!-- 远程模式部署metastore metastore地址 -->
+
+<property>
+
+<p>  <name>hive.metastore.uris</name></p>
+<p>  <value>thrift:&#x2F;&#x2F;node1:9083</value></p>
+</property>
+
+ 
+
+<!-- 关闭元数据存储授权  --> 
+
+<property>
+
+<p>  <name>hive.metastore.event.db.notification.api.auth</name></p>
+<p>  <value>false</value></p>
+</property>
+
+</configuration>
+
+<p><img src="/2023/06/09/Hive/wps61.jpg" alt="img"> </p>
+<p>6.上传mysql jdbc驱动到hive安装包lib下</p>
+<p><img src="/2023/06/09/Hive/wps62.jpg" alt="img"><br>7.初始化元数据</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;</p>
+<p>bin&#x2F;schematool -initSchema -dbType mysql -verbos</p>
+<p><img src="/2023/06/09/Hive/wps63.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps64.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps65.jpg" alt="img"> </p>
+<p>8.在hdfs创建hive存储目录</p>
+<p>hadoop fs -mkdir &#x2F;tmp</p>
+<p>hadoop fs -mkdir -p &#x2F;user&#x2F;hive&#x2F;warehouse</p>
+<p>hadoop fs -chmod g+w &#x2F;tmp</p>
+<p>hadoop fs -chmod g+w &#x2F;user&#x2F;hive&#x2F;warehouse</p>
+<p><img src="/2023/06/09/Hive/wps66.jpg" alt="img"> </p>
+<p>9、启动</p>
+<p>（1）启动metastore服务</p>
+<p>前台启动</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore</p>
+<p><img src="/2023/06/09/Hive/wps67.jpg" alt="img"> </p>
+<p>前台启动开启debug日志</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore –hiveconf hive.root.logger&#x3D;DEBUG,console</p>
+<p><img src="/2023/06/09/Hive/wps68.jpg" alt="img"> </p>
+<p>后台启动 进程挂起</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore &amp;</p>
+<p><img src="/2023/06/09/Hive/wps69.jpg" alt="img">（2)启动hiveserver2服务</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service hiveserver2 &amp;</p>
+<p><img src="/2023/06/09/Hive/wps70.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps71.jpg" alt="img"> </p>
+<p>（3）beeline客户端连接</p>
+<p>拷贝node1安装包到beeline客户端机器上(node3)</p>
+<p>Scp-r&#x2F;export&#x2F;server&#x2F;apache-hive-3.1.2-bin&#x2F; root@node3:&#x2F;export&#x2F;server&#x2F;</p>
+<p><img src="/2023/06/09/Hive/wps72.jpg" alt="img"> </p>
+<p>（4）连接访问</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive</p>
+<p><img src="/2023/06/09/Hive/wps73.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps74.jpg" alt="img"> </p>
+<p>完成</p>
+
     
 
     
@@ -308,7 +472,7 @@
         </li>
         <li>
           <strong>本文链接：</strong>
-          <a href="http://example.com/2023/06/08/Hive/" title="Hive" target="_blank">http://example.com/2023/06/08/Hive/</a>
+          <a href="http://example.com/2023/06/09/Hive/" title="Hive" target="_blank">http://example.com/2023/06/09/Hive/</a>
         </li>
         
         <li>
@@ -375,7 +539,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2023/06/08/Hive/" alt="微信分享二维码"> -->
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2023/06/09/Hive/" alt="微信分享二维码"> -->
     </div>
 </div>
 
@@ -390,18 +554,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2023/06/08/Docker/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Docker
-        
-      </div>
-    </a>
   
-  
-    <a href="/2023/06/08/My-New-Post/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">My New Post</div>
+    <a href="/2023/06/08/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello World</div>
       <i class="icon-circle-right"></i>
     </a>
   
