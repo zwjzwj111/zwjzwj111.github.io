@@ -214,6 +214,602 @@
             
 
   
+    <article id="post-Spark-Stand-Alone" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Spark-Stand-Alone/" target="_blank">Spark(Stand Alone)</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Spark-Stand-Alone/" class="archive-article-date">
+        <time datetime="2023-06-09T01:28:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Spark-Stand-Alone"><a href="#Spark-Stand-Alone" class="headerlink" title="Spark(Stand Alone)"></a>Spark(Stand Alone)</h1><p>部署Spark Stand Alone环境时，需要用到三台linux虚拟机构成，在此以node1、node2、node3为例</p>
+<p>node1运行: Spark的Master进程  和 1个Worker进程</p>
+<p>node2运行: spark的1个worker进程</p>
+<p>node3运行: spark的1个worker进程</p>
+<p>1.安装与配置（此处在node1上操作）</p>
+<p>（1）三台虚拟机都需要配置pyspark虚拟环境，以及安装虚拟环境中所需要的包。参考四中的1.基础环境</p>
+<p>（2）进入spark配置文件的目录中</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps221.jpg" alt="img"> </p>
+<p>（3）配置workers文件</p>
+<p>1）改名, 去掉后面的.template后缀</p>
+<p>mv workers.template workers</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps222.jpg" alt="img"> </p>
+<p>2）编辑workers文件</p>
+<p>vim workers</p>
+<p>把localhost删除，在里面追加</p>
+<p>node1</p>
+<p>node2</p>
+<p>node3</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps223.jpg" alt="img"> </p>
+<p>3）配置spark-env.sh文件</p>
+<p>mv spark-env.sh.template spark-env.sh</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps224.jpg" alt="img"> </p>
+<p>在spark-env.sh底下追加以下内容</p>
+<p>## 设置JAVA安装目录</p>
+<p>JAVA_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;jdk</p>
+<p>## HADOOP软件配置文件目录，读取HDFS上文件和运行YARN集群</p>
+<p>HADOOP_CONF_DIR&#x3D;&#x2F;export&#x2F;server&#x2F;hadoop&#x2F;etc&#x2F;hadoop</p>
+<p>YARN_CONF_DIR&#x3D;&#x2F;export&#x2F;server&#x2F;hadoop&#x2F;etc&#x2F;hadoop</p>
+<p>## 指定spark老大Master的IP和提交任务的通信端口</p>
+<p># 告知Spark的master运行在哪个机器上,node1上启动master</p>
+<p>export SPARK_MASTER_HOST&#x3D;node1</p>
+<p># 告知spark master的通讯端口</p>
+<p>export SPARK_MASTER_PORT&#x3D;7077</p>
+<p># 告知spark master的 webui端口</p>
+<p>SPARK_MASTER_WEBUI_PORT&#x3D;8080</p>
+<p># worker cpu可用核数</p>
+<p>SPARK_WORKER_CORES&#x3D;1</p>
+<p># worker可用内存</p>
+<p>SPARK_WORKER_MEMORY&#x3D;1g</p>
+<p># worker的工作通讯地址</p>
+<p>SPARK_WORKER_PORT&#x3D;7078</p>
+<p># worker的 webui地址</p>
+<p>SPARK_WORKER_WEBUI_PORT&#x3D;8081</p>
+<p>## 设置历史服务器</p>
+<p># 配置的意思是  将spark程序运行的历史日志 存到hdfs的&#x2F;sparklog文件夹中</p>
+<p>SPARK_HISTORY_OPTS&#x3D;”-Dspark.history.fs.logDirectory&#x3D;hdfs:&#x2F;&#x2F;node1:8020&#x2F;sparklog&#x2F; -Dspark.history.fs.cleaner.enabled&#x3D;true”</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps225.jpg" alt="img"> </p>
+<p>4）在HDFS上创建用来存放程序运行历史记录的文件夹</p>
+<p>hadoop fs -mkdir &#x2F;sparklog</p>
+<p>hadoop fs -chmod 777 &#x2F;sparklog</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps226.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/Spark-Stand-Alonewps227.jpg" alt="img"> </p>
+<p>5）配置spark-defaults.conf</p>
+<p>mv spark-defaults.conf.template spark-defaults.conf</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps228.jpg" alt="img"> </p>
+<p>在文件中追加以下内容</p>
+<p># 开启spark的日期记录功能</p>
+<p>spark.eventLog.enabled 	true</p>
+<p># 设置spark日志记录的路径</p>
+<p>spark.eventLog.dir	 hdfs:&#x2F;&#x2F;node1:8020&#x2F;sparklog&#x2F; </p>
+<p># 设置spark日志是否启动压缩</p>
+<p>spark.eventLog.compress 	true</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps229.jpg" alt="img"> </p>
+<p>6）配置log4j文件</p>
+<p>更改INFO为WARN</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/ps230.jpg" alt="img"> </p>
+<p>2.分发</p>
+<p>（1）将node1上配置好的Spark分发到其他文件夹上</p>
+<p>scp -r spark-3.2.0-bin-hadoop3.2&#x2F; root@node2:&#x2F;export&#x2F;server&#x2F;</p>
+<p>scp -r spark-3.2.0-bin-hadoop3.2&#x2F; root@node3:&#x2F;export&#x2F;server&#x2F;</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps231.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps232.jpg" alt="img"> </p>
+<p>（2）在node2和node3上设置软链接</p>
+<p>ln -s spark-3.2.0-bin-hadoop3.2&#x2F; spark</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps233.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps234.jpg" alt="img"> </p>
+<p>3.配置三台虚拟机的&#x2F;etc&#x2F;profile文件</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps235.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps236.jpg" alt="img"> </p>
+<p>4.启动spark的master和worker进程</p>
+<p>sbin&#x2F;start-all.sh</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps237.jpg" alt="img"> </p>
+<p>5.查看进程</p>
+<p>node1：</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps238.jpg" alt="img"> </p>
+<p>node2：</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps239.jpg" alt="img"> </p>
+<p>node3：</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps240.jpg" alt="img"> </p>
+<p>6.查看master的web ui</p>
+<p>因为spark配置过程中，默认端口master设置了8080，所以登录到node1:8080网址上</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps241.jpg" alt="img"> </p>
+<p>7.链接到StandAlone集群</p>
+<p>（1）pyspark</p>
+<p>.&#x2F;pyspark –master spark:&#x2F;&#x2F;node1:7077</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps242.jpg" alt="img"> </p>
+<p>（2）spark-shell</p>
+<p>1）.&#x2F; spark-shell –master spark:&#x2F;&#x2F;node1:7077</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps243.jpg" alt="img"> </p>
+<p>（3）spark-submit (PI)</p>
+<p>.&#x2F;spark-submit –master spark:&#x2F;&#x2F;node1:7077 &#x2F;export&#x2F;server&#x2F;spark&#x2F;examples&#x2F;src&#x2F;main&#x2F;python&#x2F;pi.py 100</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps244.jpg" alt="img"> </p>
+<p>8.查看历史服务器web ui</p>
+<p>打开浏览器</p>
+<p><img src="/2023/06/09/Spark-Stand-Alone/wps245.jpg" alt="img"></p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Spark-Stand-Alone/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Spark-Pyspark" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Spark-Pyspark/" target="_blank">Spark(Pyspark)</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Spark-Pyspark/" class="archive-article-date">
+        <time datetime="2023-06-09T01:24:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Spark（Pyspark）"><a href="#Spark（Pyspark）" class="headerlink" title="Spark（Pyspark）"></a>Spark（Pyspark）</h1><p>一、本机pyspark环境配置</p>
+<p>1.安装anaconda环境</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps213.jpg" alt="img"> </p>
+<p>2.配置pycharm本地python解释器</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps214.jpg" alt="img"> </p>
+<p>3.运行本地代码</p>
+<p># coding:utf8</p>
+<p>from pyspark import SparkConf, SparkContext</p>
+<p>import os</p>
+<p>os.environ[‘PYSPARK_PYTHON’]&#x3D;’D:\Anaconda\anaconda\envs\pyspark\python.exe’</p>
+<p>if <strong>name</strong> &#x3D;&#x3D; ‘<strong>main</strong>‘:</p>
+<p>  conf &#x3D; SparkConf().setAppName(“WordCountHelloWorld”).setMaster(“local[*]”)</p>
+<p>  sc &#x3D; SparkContext(conf&#x3D;conf)</p>
+<p>  file_rdd &#x3D; sc.textFile(“..&#x2F;data&#x2F;input&#x2F;words.txt”)</p>
+<p>  words_rdd &#x3D; file_rdd.flatMap(lambda line: line.split(“ “))</p>
+<p>  words_with_one_rdd &#x3D; words_rdd.map(lambda x: (x, 1))</p>
+<p>  result_rdd &#x3D; words_with_one_rdd.reduceByKey(lambda a, b: a + b)</p>
+<p>print(result_rdd.collect())</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps215.jpg" alt="img"> </p>
+<p>二、远程SSH Linux链接</p>
+<p>在本地运行，可能会受到一些限制，而且在处理大量数据时，这些限制可能会影响pyspark运行效果，导致一系列性能问题。所以采用远程链接的方式来处理大大规模数据，用ssh远程方式运行pyspark。</p>
+<p>1.配置远程ssh linux解释器</p>
+<p>（1）链接设置里的SSH Interpreter</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps216.jpg" alt="img"> </p>
+<p>（2）点击下图中的ok</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps217.jpg" alt="img"> </p>
+<p>（3）输入密码</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps218.jpg" alt="img"></p>
+<p>（4)选择远程链接的解析器位置</p>
+<p>&#x2F;export&#x2F;server&#x2F;anaconda3&#x2F;envs&#x2F;pyspark&#x2F;bin&#x2F;python3.8</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps219.jpg" alt="img"> </p>
+<p>2.查看虚拟机上是否同步了pycharm中的文件</p>
+<p><img src="/2023/06/09/Spark-Pyspark/wps220.jpg" alt="img"> </p>
+<p>3.运行ssh代码文件</p>
+<p># coding:utf8</p>
+<p>from pyspark import SparkConf, SparkContext</p>
+<p>import os</p>
+<p>os.environ[‘PYSPARK_PYTHON’]&#x3D;’&#x2F;export&#x2F;server&#x2F;anaconda3&#x2F;envs&#x2F;pyspark&#x2F;bin&#x2F;python3.8’</p>
+<p>if <strong>name</strong> &#x3D;&#x3D; ‘<strong>main</strong>‘:</p>
+<p>  conf &#x3D; SparkConf().setAppName(“WordCountHelloWorld”).setMaster(“local[*]”)</p>
+<p>  sc &#x3D; SparkContext(conf&#x3D;conf)</p>
+<p>  file_rdd &#x3D; sc.textFile(“file:&#x2F;&#x2F;&#x2F;tmp&#x2F;pycharm_project_96&#x2F;data&#x2F;input&#x2F;words.txt”)</p>
+<p>  words_rdd &#x3D; file_rdd.flatMap(lambda line: line.split(“ “))</p>
+<p>  words_with_one_rdd &#x3D; words_rdd.map(lambda x: (x, 1))</p>
+<p>  result_rdd &#x3D; words_with_one_rdd.reduceByKey(lambda a, b: a + b)</p>
+<p>print(result_rdd.collect())</p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Spark-Pyspark/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Spark-Yarn" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Spark-Yarn/" target="_blank">Spark(Yarn)</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Spark-Yarn/" class="archive-article-date">
+        <time datetime="2023-06-09T01:21:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Spark-Yarn"><a href="#Spark-Yarn" class="headerlink" title="Spark(Yarn)"></a>Spark(Yarn)</h1><p>1、client 模式测试</p>
+<p>假设运行圆周率PI程序，采用client模式，命令如下：</p>
+<p>${SPARK_HOME}&#x2F;bin&#x2F;spark-submit –master yarn –deploy-mode client –driver-memory 512m –executor-memory 512m –num-executors 1 –total-executor-cores 2 ${SPARK_HOME}&#x2F;examples&#x2F;src&#x2F;main&#x2F;python&#x2F;pi.py 10</p>
+<p><img src="/2023/06/09/Spark-Yarn/wps210.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-Yarn/wps211.jpg" alt="img"> </p>
+<p>2、cluster 模式测试</p>
+<p>假设运行圆周率PI程序，采用cluster模式，命令如下：</p>
+<p>${SPARK_HOME}&#x2F;bin&#x2F;spark-submit –master yarn –deploy-mode cluster –driver-memory 512m –executor-memory 512m –num-executors 1 –total-executor-cores 2 –conf “spark.pyspark.driver.python&#x3D;&#x2F;root&#x2F;anaconda3&#x2F;bin&#x2F;python3” –conf “spark.pyspark.python&#x3D;&#x2F;root&#x2F;anaconda3&#x2F;bin&#x2F;python3” ${SPARK_HOME}&#x2F;examples&#x2F;src&#x2F;main&#x2F;python&#x2F;pi.py 10</p>
+<p><img src="/2023/06/09/Spark-Yarn/wps212.jpg" alt="img"></p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Spark-Yarn/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Spark-HA" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Spark-HA/" target="_blank">Spark(HA)</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Spark-HA/" class="archive-article-date">
+        <time datetime="2023-06-09T01:17:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Spark（HA）"><a href="#Spark（HA）" class="headerlink" title="Spark（HA）"></a>Spark（HA）</h1><p>1、启动Zookeeper、HDFS</p>
+<p><img src="/2023/06/09/Spark-HA/wps196.jpg" alt="img"> </p>
+<p>2、在spark-env.sh中, 删除: SPARK_MASTER_HOST&#x3D;node1</p>
+<p><img src="/2023/06/09/Spark-HA/wps197.jpg" alt="img"> </p>
+<p>3、在spark-env.sh中增加：</p>
+<p>SPARK_DAEMON_JAVA_OPTS&#x3D;”-Dspark.deploy.recoveryMode&#x3D;ZOOKEEPER -Dspark.deploy.zookeeper.url&#x3D;node1:2181,node2:2181,node3:2181 -Dspark.deploy.zookeeper.dir&#x3D;&#x2F;spark-ha”</p>
+<p># spark.deploy.recoveryMode 指定HA模式 基于Zookeeper实现</p>
+<p># 指定Zookeeper的连接地址</p>
+<p># 指定在Zookeeper中注册临时节点的路径</p>
+<p><img src="/2023/06/09/Spark-HA/wps198.jpg" alt="img"> </p>
+<p>4、将spark-env.sh 分别分发到node2、node3上</p>
+<p>scp spark-env.sh node2:&#x2F;export&#x2F;server&#x2F;spark&#x2F;conf&#x2F;</p>
+<p>scp spark-env.sh node3:&#x2F;export&#x2F;server&#x2F;spark&#x2F;conf&#x2F;</p>
+<p><img src="/2023/06/09/Spark-HA/wps199.jpg" alt="img"> </p>
+<p>5、停止当前StandAlone集群</p>
+<p>sbin&#x2F;stop-all.sh</p>
+<p><img src="/2023/06/09/Spark-HA/wps200.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-HA/wps201.jpg" alt="img"> </p>
+<p>6、启动集群，在node1上 启动一个master 和全部worker</p>
+<p>sbin&#x2F;start-all.sh</p>
+<p><img src="/2023/06/09/Spark-HA/wps202.jpg" alt="img"> </p>
+<p>在node2上启动master</p>
+<p>sbin&#x2F;start-master.sh</p>
+<p><img src="/2023/06/09/Spark-HA/wps203.jpg" alt="img"> </p>
+<p>7、进入node1、node2 8081端口</p>
+<p><img src="/2023/06/09/Spark-HA/wps204.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-HA/wps205.jpg" alt="img"> </p>
+<p>8、提交一个spark任务到当前<code>alive</code>master上:</p>
+<p>bin&#x2F;spark-submit–masterspark:&#x2F;&#x2F;node1:7077 &#x2F;export&#x2F;server&#x2F;spark&#x2F;examples&#x2F;src&#x2F;main&#x2F;python&#x2F;pi.py 1000</p>
+<p><img src="/2023/06/09/Spark-HA/wps206.jpg" alt="img"> </p>
+<p>9、kill node1中master进程</p>
+<p>kill -9 11354</p>
+<p><img src="/2023/06/09/Spark-HA/wps207.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Spark-HA/wps208.jpg" alt="img"> </p>
+<p>10、查看node2中master进程</p>
+<p><img src="/2023/06/09/Spark-HA/wps209.jpg" alt="img"></p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Spark-HA/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Spark-local" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -328,6 +924,620 @@
     
     <p class="article-more-link">
       <a class="article-more-a" href="/2023/06/09/Spark-local/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Docker" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Docker/" target="_blank">Docker</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Docker/" class="archive-article-date">
+        <time datetime="2023-06-09T00:52:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><p>Docker是一种构建在LXC之上，基于进程容器的轻量级虚拟化解决方案，实现了应用程序级别的资源隔离。通过Docker技术，开发者把应用以及依赖包封装到一个镜像中，可以发布到Linux或Windows机器上。</p>
+<p>Docker镜像就像停止运行的容器，镜像由多个层组成，每层叠加之后，从外部看来就如一个独立的对象。镜像内部是一个精简的操作系统（OS），同时还包含应用运行所必须的文件和依赖包。Docker镜像存储在镜像仓库服务（Image Registry）当中。Docker客户端的镜像仓库服务是可配置的，默认使用Docker Hub。镜像仓库服务包含多个镜像仓库（Image Repository）。同样，一个镜像仓库中可以包含多个镜像。</p>
+<p>1、Docker安装</p>
+<p>1.查看linux内核的版本。</p>
+<p><img src="/2023/06/09/Docker/wps105.jpg" alt="img"></p>
+<p>3.更新ubuntu16.04的源。</p>
+<p><img src="/2023/06/09/Docker/wps106.jpg" alt="img"></p>
+<p>4.安装docker。</p>
+<p><img src="/2023/06/09/Docker/wps107.jpg" alt="img"></p>
+<p><img src="/2023/06/09/Docker/wps108.jpg" alt="img">	</p>
+<p>5.查看docker版本。</p>
+<p><img src="/2023/06/09/Docker/wps109.jpg" alt="img"> </p>
+<ol start="6">
+<li>启动docker服务，查看 docker 服务状态。</li>
+</ol>
+<p><img src="/2023/06/09/Docker/wps110.jpg" alt="img"> </p>
+<ol start="7">
+<li>测试运行docker Hello World。</li>
+</ol>
+<p><img src="/2023/06/09/Docker/wps111.jpg" alt="img"> </p>
+<p>8.停止 docker 服务。</p>
+<p><img src="/2023/06/09/Docker/wps112.jpg" alt="img"> </p>
+<p>二、Docker使用</p>
+<p>1.镜像使用</p>
+<p>(1)列出镜像列表。</p>
+<p><img src="/2023/06/09/Docker/wps113.jpg" alt="img"> </p>
+<p>(2)拉取镜像（在本地主机上使用一个不存在的镜像前预先下载它）。</p>
+<p><img src="/2023/06/09/Docker/wps114.jpg" alt="img"> </p>
+<p>(3)搜索镜像。</p>
+<p><img src="/2023/06/09/Docker/wps115.jpg" alt="img"> </p>
+<p>实验2.docker 容器的使用</p>
+<p>(1)查看docker客户端的所有命令使用方法。</p>
+<p><img src="/2023/06/09/Docker/wps116.jpg" alt="img"> </p>
+<p>(2)了解Docker运行时的命令使用方法。</p>
+<p><img src="/2023/06/09/Docker/wps117.jpg" alt="img"> </p>
+<p>(3)列出后台运行的容器列表。</p>
+<p><img src="/2023/06/09/Docker/wps118.jpg" alt="img"> </p>
+<p>(4)通过ubuntu14.04镜像创建一个容器，但不启动它。</p>
+<p><img src="/2023/06/09/Docker/wps119.jpg" alt="img"> </p>
+<p>(5)运行容器，运行成功后在容器中可以使用ubuntu14.04。（-i:以交互模式运行容器，通常与-t同时使用，表示开启了input功能。-t:为容器重新分配一个伪输入终端，通常与-i同时使用，表示开启了连接容器里的终端。ll:查看容器内所有文件。）</p>
+<p><img src="/2023/06/09/Docker/wps120.jpg" alt="img"> </p>
+<p>(6)在docker容器中运行一个Python Flask应用来运行一个web应用。</p>
+<p>a.拉取镜像</p>
+<p><img src="/2023/06/09/Docker/wps121.jpg" alt="img"> </p>
+<p>b.运行容器（-d:让容器在后台运行，-P:将容器内部使用的网络端口映射到我们使用的主机上）</p>
+<p><img src="/2023/06/09/Docker/wps122.jpg" alt="img"> </p>
+<p>c.查看正在运行的容器</p>
+<p><img src="/2023/06/09/Docker/wps123.jpg" alt="img"> </p>
+<p>d.由图可知Docker开放了5000端口映射到主机端口32768 上，可以通过浏览器访问web应用</p>
+<p><img src="/2023/06/09/Docker/wps124.jpg" alt="img"> </p>
+<p>e.查看web应用程序日志（-f:让docker logs像使用tail -f一样来输出容器内部的标准输出）</p>
+<p><img src="/2023/06/09/Docker/wps125.jpg" alt="img"> </p>
+<p>f.停止web应用容器</p>
+<p><img src="/2023/06/09/Docker/wps126.jpg" alt="img"> </p>
+<p>g.移除web应用容器（容器必须是停止状态）</p>
+<p><img src="/2023/06/09/Docker/wps127.jpg" alt="img"> </p>
+<p>3.容器连接</p>
+<p>(1)创建一个python应用的容器。</p>
+<p><img src="/2023/06/09/Docker/wps128.jpg" alt="img"></p>
+<p>(2)将容器内部端口绑定到指定的主机端口（-P:容器内部端口随机映射到主机端口）。</p>
+<p><img src="/2023/06/09/Docker/wps129.jpg" alt="img"></p>
+<p>(3)查看后台正在运行的容器。</p>
+<p><img src="/2023/06/09/Docker/wps130.jpg" alt="img"></p>
+<p>(4)指定容器绑定的网络地址，这样我们就可以通过访问127.0.0.1:5001来访问容器的5000端口。</p>
+<p><img src="/2023/06/09/Docker/wps131.jpg" alt="img"> </p>
+<p>(5)容器命名。</p>
+<p><img src="/2023/06/09/Docker/wps132.jpg" alt="img"> </p>
+<p>4.docker容器间通信</p>
+<p>(1)创建bridge网络 my_net2，指定网段和网关参数。</p>
+<p><img src="/2023/06/09/Docker/wps133.jpg" alt="img"> </p>
+<p>(2)参看网络配置。</p>
+<p><img src="/2023/06/09/Docker/wps134.jpg" alt="img"> </p>
+<p>(3)通过DNS server进行通信。</p>
+<p>a.启动bbox1和bbox2两个容器</p>
+<p><img src="/2023/06/09/Docker/wps135.jpg" alt="img"> </p>
+<p>b.验证bbox2可以ping到bbox1</p>
+<p><img src="/2023/06/09/Docker/wps136.jpg" alt="img"> </p>
+<p>(4)默认的bridge网络无法使用docker DNS，如下。</p>
+<p>a.创建bbox3和bbox4，均连接到bridge网络</p>
+<p><img src="/2023/06/09/Docker/wps137.jpg" alt="img"> </p>
+<p>b.bbox4无法ping到bbox3</p>
+<p><img src="/2023/06/09/Docker/wps138.jpg" alt="img"> </p>
+<p>(5)通过joined容器通信。</p>
+<p>a.创建一个httpd容器，名为web1</p>
+<p><img src="/2023/06/09/Docker/wps139.jpg" alt="img"> </p>
+<p>b.创建busybox容器并通过–network&#x3D;container:web1指定joined容器为web1，并查看busybox容器中的网络配置信息（Container模式就是在运行容器时通过–net指定另一个已经在运行的有单独Network Namespace的容器,与这个容器共享一个Network Namespace。在这种情况下，新建的容器没有自己的网卡，也不会给它分配IP，而是两个容器共享IP和端口空间）</p>
+<p><img src="/2023/06/09/Docker/wps140.jpg" alt="img"> </p>
+<p>c.查看 web1 的网络配置（docker exec命令能够在运行着的容器中执行命令）</p>
+<p><img src="/2023/06/09/Docker/wps141.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Docker/wps142.jpg" alt="img"> </p>
+<p>d.可以看出busybox和web1的网卡mac地址与IP 完全一样，它们共享了相同的网络栈。 因此，busybox可以直接用127.0.0.1访问web1的http 服务</p>
+<p><img src="/2023/06/09/Docker/wps143.jpg" alt="img"> </p>
+<p>5.docker安装Nginx(engine x)</p>
+<p>(1)以后台模式启动一个交互式容器,并将容器的 80 端口映射到主机随机端口。</p>
+<p><img src="/2023/06/09/Docker/wps144.jpg" alt="img"> </p>
+<p>(2)对容器内资源进行更新和升级。</p>
+<p><img src="/2023/06/09/Docker/wps145.jpg" alt="img"> </p>
+<p>(3)在容器内安装Nginx服务（指令中的y&#x3D;yes，表示跳过系统提示，直接安装）</p>
+<p><img src="/2023/06/09/Docker/wps146.jpg" alt="img"> </p>
+<p>(4)在容器内安装文本编辑器vim。</p>
+<p><img src="/2023/06/09/Docker/wps147.jpg" alt="img"> </p>
+<p>(5)在容器中创建静态页面（-p表示创建目录及其下面的子目录）。</p>
+<p><img src="/2023/06/09/Docker/wps148.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Docker/wps149.jpg" alt="img"> </p>
+<p>(6)在容器中编辑Nginx配置文件，修改路径。</p>
+<p><img src="/2023/06/09/Docker/wps150.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Docker/wps151.jpg" alt="img"> </p>
+<p>(7)在容器中运行Nginx。</p>
+<p><img src="/2023/06/09/Docker/wps152.jpg" alt="img"> </p>
+<p>(8)在容器中查看进程（-e:显示所有进程，-f:全格式显示）。</p>
+<p><img src="/2023/06/09/Docker/wps153.jpg" alt="img"> </p>
+<p>(9)验证网站访问。</p>
+<p>a.用ctrl+p ctrl+q将容器放于后台运行，再用docker ps命令查看后台运行的容器</p>
+<p><img src="/2023/06/09/Docker/wps154.jpg" alt="img"> </p>
+<p>b.访问nginx</p>
+<p><img src="/2023/06/09/Docker/wps155.jpg" alt="img"> </p>
+<p>c.在宿主机的浏览器，通过ubuntun16.04的ip地址和端口访问</p>
+<p><img src="/2023/06/09/Docker/wps156.jpg" alt="img"> </p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Docker/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Git" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Git/" target="_blank">Git</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Git/" class="archive-article-date">
+        <time datetime="2023-06-09T00:44:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><p>1.安装git</p>
+<p>下载两个软件包、安装</p>
+<p><img src="/2023/06/09/Git/wps75.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps76.jpg" alt="img"> </p>
+<p>2.git初始化</p>
+<p>（1）新建测试文件夹test，创建版本库</p>
+<p><img src="/2023/06/09/Git/wps77.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps78.jpg" alt="img"> </p>
+<p>3.git操作本地仓库</p>
+<p>（1）初始化仓库（以test仓库为例）</p>
+<p><img src="/2023/06/09/Git/wps79.jpg" alt="img"> </p>
+<p>（2）添加文件</p>
+<p>创建helloworld.txt文件</p>
+<p><img src="/2023/06/09/Git/wps80.jpg" alt="img"> </p>
+<p>(3)添加文件、提交到本地仓库</p>
+<p><img src="/2023/06/09/Git/wps81.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps82.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/sx\blog\source_posts\Git\wps83.jpg" alt="img"> </p>
+<p>（4）修改、再次提交文件</p>
+<p>修改文件后,多了一个红色感叹号</p>
+<p><img src="/2023/06/09/Git/wps84.jpg" alt="img"> </p>
+<p>重新提交</p>
+<p><img src="/2023/06/09/Git/wps85.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps86.jpg" alt="img"> </p>
+<p>重复上面步骤</p>
+<p>（5）修改文件但不提交，比较差异</p>
+<p><img src="/2023/06/09/Git/wps87.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps88.jpg" alt="img"> </p>
+<p>（6）查看提交历史记录</p>
+<p><img src="/2023/06/09/Git/wps89.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps90.jpg" alt="img"> </p>
+<p>（7）回退历史版本</p>
+<p><img src="/2023/06/09/Git/wps91.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps92.jpg" alt="img"> </p>
+<p>（8）文件删除</p>
+<p>本地删除与恢复</p>
+<p><img src="/2023/06/09/Git/wps93.jpg" alt="img"> </p>
+<p>从版本库删除，但不删除本地</p>
+<p><img src="/2023/06/09/Git/wps94.jpg" alt="img"> </p>
+<p>4.git操作本地仓库（分支）</p>
+<p>（1）创建分支</p>
+<p><img src="/2023/06/09/Git/wps95.jpg" alt="img"> </p>
+<p>（2）查看分支</p>
+<p><img src="/2023/06/09/Git/wps96.jpg" alt="img">（3)切换分支</p>
+<p><img src="/2023/06/09/Git/wps97.jpg" alt="img">（4)合并分支文件</p>
+<p><img src="/2023/06/09/Git/wps98.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps99.jpg" alt="img"> </p>
+<p>（5）删除分支</p>
+<p>进入到版本分支图中</p>
+<p><img src="/2023/06/09/Git/wps100.jpg" alt="img"> </p>
+<p>5、远程仓库</p>
+<p>（1）创建远程仓库，推送本地代码到远端</p>
+<p><img src="/2023/06/09/Git/wps101.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps102.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps103.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Git/wps104.jpg" alt="img"></p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Git/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Hive" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Hive/" target="_blank">Hive</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Hive/" class="archive-article-date">
+        <time datetime="2023-06-09T00:30:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h1><ol>
+<li>进入官网下载</li>
+</ol>
+<p><img src="/2023/06/09/Hive/wps53.jpg" alt="img"> </p>
+<ol start="2">
+<li>上传安装包</li>
+</ol>
+<p><img src="/2023/06/09/Hive/wps54.jpg" alt="img"> </p>
+<p>3、解压并设置软链接</p>
+<p>tar zxvf apache-hive-3.1.2-bin.tar.gz</p>
+<p><img src="/2023/06/09/Hive/wps55.jpg" alt="img"> </p>
+<p>4、解决hive与hadoop之间guava版本差异</p>
+<p>（1）进入hive目录下</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;</p>
+<p><img src="/2023/06/09/Hive/wps56.jpg" alt="img"> </p>
+<p>（2）删除hive的lib路径下的guava-19.0.jar</p>
+<p><img src="/2023/06/09/Hive/wps57.jpg" alt="img"> </p>
+<p>（3）复制hadoop的guava-27.0-jre.jar到hive的lib下</p>
+<p>cp&#x2F;export&#x2F;server&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;common&#x2F;lib&#x2F;guava-27.0-jre.jar .&#x2F;lib&#x2F;</p>
+<p><img src="/2023/06/09/Hive/wps58.jpg" alt="img">5.修改配置文件</p>
+<p>（1）hive-env.sh</p>
+<p>进入hive的conf路径下</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;con</p>
+<p>移动hive-env.sh.template到hive-env.sh</p>
+<p>mv hive-env.sh.template hive-env.sh</p>
+<p><img src="/2023/06/09/Hive/wps59.jpg" alt="img"> </p>
+<p>编辑hive-env.sh</p>
+<p>vim hive-env.sh</p>
+<p>在尾部加入</p>
+<p>export HADOOP_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;hadoop</p>
+<p>export HIVE_CONF_DIR&#x3D;&#x2F;export&#x2F;server&#x2F;hive&#x2F;conf</p>
+<p>export HIVE_AUX_JARS_PATH&#x3D;&#x2F;export&#x2F;server&#x2F;hive&#x2F;lib</p>
+<p><img src="/2023/06/09/Hive/wps60.jpg" alt="img"> </p>
+<p>（2）hive-site.xml</p>
+<p>vim hive-site.xml</p>
+<p>加入</p>
+<configuration>
+
+<!-- 存储元数据mysql相关配置 -->
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionURL</name></p>
+<p>​	<value>jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;hive3?createDatabaseIfNotExist&#x3D;true&amp;useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8</value></p>
+</property>
+
+ 
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionDriverName</name></p>
+<p>​	<value>com.mysql.jdbc.Driver</value></p>
+</property>
+
+ 
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionUserName</name></p>
+<p>​	<value>root</value></p>
+</property>
+
+ 
+
+<property>
+
+<p>​	<name>javax.jdo.option.ConnectionPassword</name></p>
+<p>​	<value>hadoop</value></p>
+</property>
+
+ 
+
+<!-- H2S运行绑定host -->
+
+<property>
+
+<p>  <name>hive.server2.thrift.bind.host</name></p>
+<p>  <value>node1</value></p>
+</property>
+
+ 
+
+<!-- 远程模式部署metastore metastore地址 -->
+
+<property>
+
+<p>  <name>hive.metastore.uris</name></p>
+<p>  <value>thrift:&#x2F;&#x2F;node1:9083</value></p>
+</property>
+
+ 
+
+<!-- 关闭元数据存储授权  --> 
+
+<property>
+
+<p>  <name>hive.metastore.event.db.notification.api.auth</name></p>
+<p>  <value>false</value></p>
+</property>
+
+</configuration>
+
+<p><img src="/2023/06/09/Hive/wps61.jpg" alt="img"> </p>
+<p>6.上传mysql jdbc驱动到hive安装包lib下</p>
+<p><img src="/2023/06/09/Hive/wps62.jpg" alt="img"><br>7.初始化元数据</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;</p>
+<p>bin&#x2F;schematool -initSchema -dbType mysql -verbos</p>
+<p><img src="/2023/06/09/Hive/wps63.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps64.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps65.jpg" alt="img"> </p>
+<p>8.在hdfs创建hive存储目录</p>
+<p>hadoop fs -mkdir &#x2F;tmp</p>
+<p>hadoop fs -mkdir -p &#x2F;user&#x2F;hive&#x2F;warehouse</p>
+<p>hadoop fs -chmod g+w &#x2F;tmp</p>
+<p>hadoop fs -chmod g+w &#x2F;user&#x2F;hive&#x2F;warehouse</p>
+<p><img src="/2023/06/09/Hive/wps66.jpg" alt="img"> </p>
+<p>9、启动</p>
+<p>（1）启动metastore服务</p>
+<p>前台启动</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore</p>
+<p><img src="/2023/06/09/Hive/wps67.jpg" alt="img"> </p>
+<p>前台启动开启debug日志</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore –hiveconf hive.root.logger&#x3D;DEBUG,console</p>
+<p><img src="/2023/06/09/Hive/wps68.jpg" alt="img"> </p>
+<p>后台启动 进程挂起</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore &amp;</p>
+<p><img src="/2023/06/09/Hive/wps69.jpg" alt="img"></p>
+<p>（2)启动hiveserver2服务</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service hiveserver2 &amp;</p>
+<p><img src="/2023/06/09/Hive/wps70.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps71.jpg" alt="img"> </p>
+<p>（3）beeline客户端连接</p>
+<p>拷贝node1安装包到beeline客户端机器上(node3)</p>
+<p>Scp-r&#x2F;export&#x2F;server&#x2F;apache-hive-3.1.2-bin&#x2F; root@node3:&#x2F;export&#x2F;server&#x2F;</p>
+<p><img src="/2023/06/09/Hive/wps72.jpg" alt="img"> </p>
+<p>（4）连接访问</p>
+<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive</p>
+<p><img src="/2023/06/09/Hive/wps73.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Hive/wps74.jpg" alt="img"> </p>
+<p>完成</p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Hive/">展开全文 >></a>
     </p>
     
 
