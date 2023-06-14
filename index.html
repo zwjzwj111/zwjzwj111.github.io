@@ -233,6 +233,398 @@
 
 
   
+    <article id="post-Flume" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/14/Flume/" target="_blank">Flume</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/14/Flume/" class="archive-article-date">
+        <time datetime="2023-06-14T05:13:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-14</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p><strong>一、</strong> <strong>Flume</strong></p>
+<p>1、 安装flume</p>
+<p>（1）解压安装包apache-flume-1.9.0-bin.tar.gz</p>
+<p>tar zxvf apache-flume-1.9.0-bin.tar.gz</p>
+<p><img src="/2023/06/14/Flume/wps1.jpg" alt="img"> </p>
+<p>（2）添加软连接</p>
+<p>ln -s apache-flume-1.9.0-bin flume</p>
+<p><img src="/2023/06/14/Flume/wps2.jpg" alt="img"> </p>
+<p>（3）在&#x2F;etc&#x2F;profile文件中添加以下语句</p>
+<p>#FLUME_HOME</p>
+<p>export FLUME_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;flume</p>
+<p>export PATH&#x3D;$PATH:$FLUME_HOME&#x2F;bin</p>
+<p><img src="/2023/06/14/Flume/wps3.jpg" alt="img"> </p>
+<p>（4）刷新profile文件</p>
+<p>查看是否设置成功</p>
+<p><img src="/2023/06/14/Flume/wps4.jpg" alt="img"> </p>
+<p>2、 使用</p>
+<p>（1）安装netcat</p>
+<p>yum install -y nc</p>
+<p><img src="/2023/06/14/Flume/wps5.jpg" alt="img"> </p>
+<p>（2）在netcat-logger.conf中添加以下语句</p>
+<p># example1-netcat-logger.conf: 单节点Flume配置</p>
+<p># 定义agent名称为a1</p>
+<p># 设置3个组件的名称</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.channels &#x3D; c1</p>
+<p># 配置source类型为NetCat,监听地址为本机，端口为44444</p>
+<p>a1.sources.r1.type &#x3D; netcat</p>
+<p>a1.sources.r1.bind &#x3D; 0.0.0.0</p>
+<p>a1.sources.r1.port &#x3D; 44444</p>
+<p>#source和channel关联</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p># 配置channel类型为内存，内存队列最大容量为1000，一个事务中从source接收的Events数量或者发送给sink的Events数量最大为100</p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 1000</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 100</p>
+<p># 配置sink类型为Logger</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p># 将sink绑定到channel上</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p><img src="/2023/06/14/Flume/wps6.png" alt="img"> </p>
+<p>（3）启动agent</p>
+<p>bin&#x2F;flume-ng agent -n a1 -c conf -f myconf&#x2F;example1-netcat-logger.conf -Dflume.root.logger&#x3D;INFO,console</p>
+<p><img src="/2023/06/14/Flume/wps7.jpg" alt="img"> </p>
+<p>（4）使用Netcat测试</p>
+<p>nc node1 44444</p>
+<p><img src="/2023/06/14/Flume/wps8.jpg" alt="img"> </p>
+<p>（5）观察agent控制台</p>
+<p><img src="/2023/06/14/Flume/wps9.jpg" alt="img"> </p>
+<p>3、 进行exec_source测试</p>
+<p>（1）配置文件</p>
+<p>在example2-exec-source-logger.conf添加以下语句</p>
+<p># example2-exec-source-logger.conf</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.channels &#x3D; c1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.sources.r1.type &#x3D; exec</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sources.r1.command &#x3D; tail -F &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;shell&#x2F;access.log </p>
+<p>a1.sources.r1.batchSize &#x3D; 100</p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 1000</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 100</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p><img src="/2023/06/14/Flume/wps10.jpg" alt="img"> </p>
+<p>（2）启动测试</p>
+<p>准备日志文件</p>
+<p><img src="/2023/06/14/Flume/wps11.jpg" alt="img"> </p>
+<p>准备一个脚本，在日志文件中写入数据</p>
+<p>在脚本中写入以下语句</p>
+<p>for i in {1..100}; </p>
+<p>do echo ${i} “bigdata log” &gt;&gt;  access.log ; </p>
+<p>sleep 0.5; </p>
+<p>done</p>
+<p><img src="/2023/06/14/Flume/wps12.jpg" alt="img"> </p>
+<p>（3）启动flume采集</p>
+<p>bin&#x2F;flume-ng agent -n a1 -c conf&#x2F; -f myconf&#x2F;example2-exec-source-logger.conf -Dflume.root.logger&#x3D;INFO,console</p>
+<p><img src="/2023/06/14/Flume/wps13.jpg" alt="img"> </p>
+<p>运行脚本</p>
+<p>Sh access.sh</p>
+<p><img src="/2023/06/14/Flume/wps14.jpg" alt="img"> </p>
+<p>4、spooldir_source测试</p>
+<p>（1）在example3-spooldir-source.conf文件中添加以下语句</p>
+<p>#example3-spooldir-source.conf</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.channels &#x3D; c1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sources.r1.type &#x3D; spooldir</p>
+<p>a1.sources.r1.spoolDir &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;weblog </p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 1000</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 100</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p><img src="/2023/06/14/Flume/wps15.jpg" alt="img"> </p>
+<p>（2）启动测试</p>
+<p>bin&#x2F;flume-ng agent -n a1 -c conf -f myconf&#x2F;example3-spooldir-source.conf -Dflume.root.logger&#x3D;INFO,console</p>
+<p><img src="/2023/06/14/Flume/wps16.jpg" alt="img"> </p>
+<p>（3）进行taildir_source测试</p>
+<p>在example4-taildir-source.conf中添加以下语句</p>
+<p>#example4-taildir-source.conf</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.channels &#x3D; c1</p>
+<p>a1.sources.r1.type &#x3D; TAILDIR</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sources.r1.positionFile &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;taildir_position.json</p>
+<p>a1.sources.r1.filegroups &#x3D; g1 g2</p>
+<p>a1.sources.r1.filegroups.g1 &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;weblog&#x2F;web.*</p>
+<p>a1.sources.r1.filegroups.g2 &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;wxlog&#x2F;wx.*</p>
+<p>a1.sources.r1.fileHeader &#x3D; true</p>
+<p>#动态的header-keys eg：filepath&#x3D;&#x2F;..&#x2F;..&#x2F;..&#x2F;</p>
+<p>a1.sources.r1.fileHeaderKey &#x3D; filepath</p>
+<p>#写死的header-keys（静态的） eg:a1 &#x3D; aa1</p>
+<p>a1.sources.r1.headers.g1.a1 &#x3D; aa1</p>
+<p>a1.sources.r1.headers.g1.b1 &#x3D; bb1</p>
+<p>a1.sources.r1.headers.g2.a2 &#x3D; aa2</p>
+<p>a1.sources.r1.headers.g2.b2 &#x3D; bb2</p>
+<p>a1.sources.r1.maxBatchCount &#x3D; 1000</p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 10000</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 1000</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p><img src="/2023/06/14/Flume/wps17.jpg" alt="img"> </p>
+<p>（4）启动测试</p>
+<p>bin&#x2F;flume-ng agent -n a1 -c conf&#x2F; -f  myconf&#x2F;example4-taildir-source.conf -Dflume.root.logger&#x3D;INFO,console</p>
+<p><img src="/2023/06/14/Flume/wps18.jpg" alt="img"> </p>
+<p>5、在example5-avro-source.conf文件中添加以下语句</p>
+<p>#example5-avro-source.conf</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.sources.r1.type &#x3D; avro</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sources.r1.bind &#x3D; 0.0.0.0</p>
+<p>a1.sources.r1.port &#x3D; 4141</p>
+<p>a1.channels &#x3D; c1</p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 200</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 100</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p>6、启动agent</p>
+<p>bin&#x2F;flume-ng agent -c conf -f  myconf&#x2F;example5-avro-source.conf -n a1 -Dflume.root.logger&#x3D;INFO,console  </p>
+<p><img src="/2023/06/14/Flume/wps19.jpg" alt="img"> </p>
+<p>新建avro-log.txt</p>
+<p><img src="/2023/06/14/Flume/wps20.jpg" alt="img"> </p>
+<p>7、使用File Channel,实现数据持久化</p>
+<p>在example6-file-channel.conf中添加语句</p>
+<p>#example6-file-channel.conf</p>
+<p># 定义agent名称为a1</p>
+<p># 设置3个组件的名称</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p># 多个channel使用空格分隔</p>
+<p>a1.channels &#x3D; c1 c2</p>
+<p># 配置source类型为NetCat,监听地址为本机，端口为44444</p>
+<p>a1.sources.r1.type &#x3D; netcat</p>
+<p>a1.sources.r1.bind &#x3D; 0.0.0.0</p>
+<p>a1.sources.r1.port &#x3D; 44444</p>
+<p># 配置sink类型为Logger</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p># 配置channel类型为内存，内存队列最大容量为1000，一个事务中从source接收的Events数量或者发送给sink的Events数量最大为100</p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 1000</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 100</p>
+<p># 配置FileChannel,checkpointDir为检查点文件存储目录，dataDirs为日志数据存储目录，</p>
+<p>a1.channels.c2.type &#x3D; file</p>
+<p>a1.channels.c2.checkpointDir &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;checkpoint_filechannel</p>
+<p>a1.channels.c2.dataDirs &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;data_filechannel</p>
+<p># 将source和sink绑定到channel上</p>
+<p># source同时绑定到c1和c2上</p>
+<p>a1.sources.r1.channels &#x3D; c1 c2</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p><img src="/2023/06/14/Flume/wps21.jpg" alt="img"> </p>
+<p>8、启动flume</p>
+<p>bin&#x2F;flume-ng agent -n a1 -c conf -f myconf&#x2F;example6-file-channel.conf -Dflume.root.logger&#x3D;INFO,console</p>
+<p><img src="/2023/06/14/Flume/wps22.jpg" alt="img"> </p>
+<p>关闭Flume，修改配置文件</p>
+<p># 将sink绑定到c2上</p>
+<p>a1.sinks.k1.channel &#x3D; c2</p>
+<p><img src="/2023/06/14/Flume/wps23.jpg" alt="img"> </p>
+<p>重启Flume，出现重新消费c2的数据</p>
+<p>利用avro source和avro sink实现agent级联</p>
+<p>在上游node1和node2上配置example7-1-taildir-f-avro.conf</p>
+<p>vim example7-1-taildir-f-avro.conf</p>
+<p>#上游服务器配置 example7-1-taildir-f-avro.conf</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.channels &#x3D; c1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.sources.r1.type &#x3D; TAILDIR</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sources.r1.positionFile &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;taildir_position.json</p>
+<p>a1.sources.r1.filegroups &#x3D; g1 g2</p>
+<p>a1.sources.r1.filegroups.g1 &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;weblog&#x2F;web.*</p>
+<p>a1.sources.r1.filegroups.g2 &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;wxlog&#x2F;wx.*</p>
+<p>#提高吞吐量</p>
+<p>a1.sources.r1.batchSize &#x3D; 1000</p>
+<p>#动态的header-keys eg：filepath&#x3D;&#x2F;..&#x2F;..&#x2F;..&#x2F;</p>
+<p>a1.sources.r1.fileHeaderKey &#x3D; filepath</p>
+<p>#拦截器配置，添加header&#x3D;timestamp</p>
+<p>a1.sources.r1.interceptors &#x3D; i1</p>
+<p>a1.sources.r1.interceptors.i1.type &#x3D; timestamp</p>
+<p>a1.sources.r1.interceptors.i1.headerName &#x3D; timestamp</p>
+<p>a1.channels.c1.type &#x3D; file</p>
+<p>#本机数据汇集检查点、event存储目录</p>
+<p>a1.channels.c1.checkpointDir &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;checkpoint</p>
+<p>a1.channels.c1.dataDirs &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;data</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 2000</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p>a1.sinks.k1.type &#x3D; avro</p>
+<p>a1.sinks.k1.batch-size &#x3D; 1000</p>
+<p>#下游目标主机、端口</p>
+<p>a1.sinks.k1.hostname &#x3D; node3</p>
+<p>a1.sinks.k1.port &#x3D; 44444</p>
+<p><img src="/2023/06/14/Flume/wps24.jpg" alt="img"> </p>
+<p>在下游服务器node3上配置example7-2-avro-f-hdfs.conf</p>
+<p>vim example7-2-avro-f-hdfs.conf	</p>
+<p>#下游服务器配置 example7-2-avro-f-hdfs.conf</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.channels &#x3D; c1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>#下游数据汇集avro source</p>
+<p>a1.sources.r1.type &#x3D; avro</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sources.r1.bind &#x3D; 0.0.0.0</p>
+<p>a1.sources.r1.port &#x3D; 44444</p>
+<p>a1.sources.r1.threads &#x3D; 10</p>
+<p>a1.sources.r1.batchSize &#x3D; 1000</p>
+<p>a1.channels.c1.type &#x3D; file</p>
+<p>a1.channels.c1.checkpointDir &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;checkpoint</p>
+<p>a1.channels.c1.dataDirs &#x3D; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;flumedata&#x2F;data</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 2000</p>
+<p>#hdfs sink</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p>a1.sinks.k1.type &#x3D; hdfs</p>
+<p>a1.sinks.k1.hdfs.path &#x3D; hdfs:&#x2F;&#x2F;node1:8020&#x2F;logdata&#x2F;%Y-%m-%d&#x2F;%H&#x2F;</p>
+<p>#eg：文件名 logdata_34438hxfd.log，在滚动时，logdata_34438hxfd.log.tmp</p>
+<p>a1.sinks.k1.hdfs.filePrefix &#x3D; logdata_</p>
+<p>a1.sinks.k1.hdfs.fileSuffix &#x3D; .log</p>
+<p>#三个条件没有优先级，谁先达到就进行滚动</p>
+<p>#按时间间隔滚动</p>
+<p>a1.sinks.k1.hdfs.rollInterval &#x3D; 0</p>
+<p>#按文件大小滚动 256MB</p>
+<p>a1.sinks.k1.hdfs.rollSize &#x3D; 268435456</p>
+<p>#按event条数滚动</p>
+<p>a1.sinks.k1.hdfs.rollCount &#x3D; 100000</p>
+<p>a1.sinks.k1.hdfs.batchSize &#x3D; 1000</p>
+<p>a1.sinks.k1.hdfs.codeC &#x3D; gzip</p>
+<p>a1.sinks.k1.hdfs.fileType &#x3D; CompressedStream</p>
+<p><img src="/2023/06/14/Flume/wps25.jpg" alt="img"> </p>
+<p>启动hdfs</p>
+<p>启动下游node3上的flume agent</p>
+<p>在node1和node2上准备两个日志</p>
+<p>mkdir &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;weblog&#x2F;</p>
+<p>mkdir &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;wxlog&#x2F;</p>
+<p><img src="/2023/06/14/Flume/wps26.jpg" alt="img"> </p>
+<p>在node1和node2上利用shell脚本生成日志数据</p>
+<p>while true</p>
+<p>do</p>
+<p>echo webwebwebwebweb &gt;&gt; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;weblog&#x2F;web-access.log</p>
+<p>echo wxwxwxwxwxwxwx  &gt;&gt; &#x2F;export&#x2F;data&#x2F;flume-example-data&#x2F;wxlog&#x2F;wx-access.log </p>
+<p>sleep 0.01</p>
+<p>done</p>
+<p><img src="/2023/06/14/Flume/wps27.jpg" alt="img"> </p>
+<p>启动node1和node2上的flume agent</p>
+<p>nohup bin&#x2F;flume-ng agent -n a1 -c conf&#x2F; -f myconf&#x2F;example7-1-taildir-f-avro.conf 1&gt;&#x2F;dev&#x2F;null 2&gt;&amp;1 &amp;</p>
+<p>运行脚本，同时查看node3状态和脚本运行结果</p>
+<p><img src="/2023/06/14/Flume/wps28.jpg" alt="img"> <img src="/2023/06/14/Flume/wps29.jpg" alt="img"></p>
+<p>9、拦截器</p>
+<p>vim example8-interceptor.conf</p>
+<p>在文件中加入以下语句</p>
+<p># example8-interceptor.conf</p>
+<p># 定义agent名称为a1</p>
+<p># 设置3个组件的名称</p>
+<p>a1.sources &#x3D; r1</p>
+<p>a1.sinks &#x3D; k1</p>
+<p>a1.channels &#x3D; c1</p>
+<p># 配置source类型为NetCat,监听地址为本机，端口为44444</p>
+<p>a1.sources.r1.type &#x3D; netcat</p>
+<p>a1.sources.r1.bind &#x3D; 0.0.0.0</p>
+<p>a1.sources.r1.port &#x3D; 44444</p>
+<p># 配置拦截器为host</p>
+<p>a1.sources.r1.interceptors &#x3D; i1 </p>
+<p>a1.sources.r1.interceptors.i1.type &#x3D; host</p>
+<p># 配置sink类型为Logger</p>
+<p>a1.sinks.k1.type &#x3D; logger</p>
+<p># 配置channel类型为内存，内存队列最大容量为1000，一个事务中从source接收的Events数量或者发送给sink的Events数量最大为100</p>
+<p>a1.channels.c1.type &#x3D; memory</p>
+<p>a1.channels.c1.capacity &#x3D; 1000</p>
+<p>a1.channels.c1.transactionCapacity &#x3D; 100</p>
+<p># 将source和sink绑定到channel上</p>
+<p>a1.sources.r1.channels &#x3D; c1</p>
+<p>a1.sinks.k1.channel &#x3D; c1</p>
+<p><img src="/2023/06/14/Flume/wps30.jpg" alt="img"> </p>
+<p>启动</p>
+<p>bin&#x2F;flume-ng agent -n a1 -c conf -f myconf&#x2F;example8-interceptor.conf -Dflume.root.logger&#x3D;INFO,console</p>
+<p><img src="/2023/06/14/Flume/wps31.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Flume/wps32.jpg" alt="img"> </p>
+<p>Timestamp Interceptor</p>
+<p>1）在文件中加入以下语句</p>
+<p>a1.sources.r1.interceptors &#x3D; i1 i2</p>
+<p>a1.sources.r1.interceptors.i1.type &#x3D; host</p>
+<p>a1.sources.r1.interceptors.i2.type &#x3D; timestamp</p>
+<p><img src="/2023/06/14/Flume/wps33.jpg" alt="img"> </p>
+<p>在文件中加入</p>
+<p>a1.sources.r1.interceptors &#x3D; i1 i2 i3</p>
+<p>a1.sources.r1.interceptors.i1.type &#x3D; host</p>
+<p>a1.sources.r1.interceptors.i2.type &#x3D; timestamp</p>
+<p>a1.sources.r1.interceptors.i3.type &#x3D; static</p>
+<p>a1.sources.r1.interceptors.i3.key &#x3D; datacenter</p>
+<p>a1.sources.r1.interceptors.i3.value &#x3D; NEW_YORK</p>
+<p><img src="/2023/06/14/Flume/wps34.jpg" alt="img"> </p>
+<p>10、启动测试</p>
+<p><img src="/2023/06/14/Flume/wps35.jpg" alt="img"></p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+    
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/14/Flume/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Spark-Stand-Alone" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
