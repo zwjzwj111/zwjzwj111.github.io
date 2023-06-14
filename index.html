@@ -233,6 +233,1037 @@
 
 
   
+    <article id="post-Kafka" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/14/Kafka/" target="_blank">Kafka</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/14/Kafka/" class="archive-article-date">
+        <time datetime="2023-06-14T05:53:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-14</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p><strong>Kafka</strong></p>
+<p>1、安装Kafka集群</p>
+<p>把包移动到&#x2F;export&#x2F;server，解压并且设置软连接tar zxvf kafka_2.11-2.0.0.tgz</p>
+<p><img src="/2023/06/14/Kafka/wps137.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Kafka/wps138.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Kafka/wps139.jpg" alt="img"> </p>
+<p>2、修改配置文件：</p>
+<p>vim &#x2F;etc&#x2F;profile</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config</p>
+<p>vi server.properties</p>
+<p>#为依次增长的:0、1、2、3、4,集群中唯一 id –》从0依次开始，第一部分改：</p>
+<p>broker.id&#x3D;0 </p>
+<p>—-Logbasic——</p>
+<p>#数据存储的目录，第二部分改：</p>
+<p>log.dirs&#x3D;&#x2F;export&#x2F;data&#x2F;kafka-logs  </p>
+<p>—zookeeper—-</p>
+<p>#指定 zk 集群地址，第部分改：</p>
+<p>zookeeper.connect&#x3D;node1:2181,node2:2181,node3:2181</p>
+<p><img src="/2023/06/14/Kafka/wps140.jpg" alt="img"> </p>
+<p>（1）分发kafka</p>
+<p>scp -r kafka root@node2:&#x2F;export&#x2F;server&#x2F;</p>
+<p>scp -r kafka root@node3:&#x2F;export&#x2F;server&#x2F;</p>
+<p><img src="/2023/06/14/Kafka/wps141.jpg" alt="img"> </p>
+<p>（2）在node2、3上修改配置文件</p>
+<p>把node2上的broker.id改成1，node3上的broker.id改成2</p>
+<p><img src="/2023/06/14/Kafka/wps142.jpg" alt="img"> </p>
+<p>（3）启动kafka（node1、2、3）</p>
+<p>kafka-server-start.sh -daemon &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config&#x2F;server.properties</p>
+<p><img src="/2023/06/14/Kafka/wps143.jpg" alt="img"> </p>
+<p>（4）编写一键启停脚本</p>
+<p>#!&#x2F;bin&#x2F;bash</p>
+<p>if [ $# -eq 0 ]</p>
+<p>then</p>
+<p>​	echo “please input param:start stop”</p>
+<p>else</p>
+<p>​	if [ $1 &#x3D; start  ]</p>
+<p>​		then</p>
+<p>​			for i in {1..3}</p>
+<p>​			do</p>
+<p>​				echo “${1}ing node${i}”</p>
+<p>​				ssh node${i} “source &#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh -daemon &#x2F;export&#x2F;server&#x2F;kafka&#x2F;config&#x2F;server.properties”</p>
+<p>​			done</p>
+<p>​	fi</p>
+<p>​	if [ $1 &#x3D; stop ]</p>
+<p>​		then</p>
+<p>​			for i in {1..3}</p>
+<p>​			do</p>
+<p>​				echo “${1}ing node${i}”</p>
+<p>​				ssh node${i} “source 		&#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;kafka&#x2F;bin&#x2F;kafka-server-stop.sh”</p>
+<p>​			done</p>
+<p>​	fi</p>
+<p>​	if [ $1 &#x3D; status ]</p>
+<p>​		then</p>
+<p>​			for i in {1..3}</p>
+<p>​			do</p>
+<p>​				echo “node${i} status:”</p>
+<p>​				ssh node${i} “source &#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;kafka&#x2F;bin&#x2F;kafka-server-status.sh”</p>
+<p>​			done</p>
+<p>​	fi</p>
+<p>fi</p>
+<p><img src="/2023/06/14/Kafka/wps144.jpg" alt="img"> </p>
+<p>3、创建topic</p>
+<p>&#x2F;kafka-topics.sh –create –topic tpc_1 –partitions 2 –replication-factor 2 –zookeeper node1:2181</p>
+<p><img src="/2023/06/14/Kafka/wps145.jpg" alt="img"> </p>
+<p>（1）指定副本存储位置</p>
+<p>bin&#x2F;kafka-topics.sh –create –topic tpc_2 –zookeeper node1:2181 –replica-assignment 0:1,1:2</p>
+<p><img src="/2023/06/14/Kafka/wps146.jpg" alt="img"> </p>
+<p>（2）创建test主题</p>
+<p>&#x2F;kafka-topics.sh –zookeeper localhost:2181 –create –topic test –replication-factor 1 –partitions 5</p>
+<p>查看</p>
+<p><img src="/2023/06/14/Kafka/wps147.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Kafka/wps148.jpg" alt="img"> </p>
+<p>（3）删除topic</p>
+<p>bin&#x2F;kafka-topics.sh  –delete –topic tpc_1 –zookeeper node1:2181</p>
+<p><img src="/2023/06/14/Kafka/wps149.jpg" alt="img"> </p>
+<p>（4）列出当前系统topic</p>
+<p>bin&#x2F;kafka-topics.sh –zookeeper node1:2181,node2:2181,node3:2181 –list</p>
+<p><img src="/2023/06/14/Kafka/wps150.jpg" alt="img"> </p>
+<p>（5）查看topic的详细信息</p>
+<p>bin&#x2F;kafka-topics.sh –describe –topic tpc_1 –zookeeper node1:2181</p>
+<p><img src="/2023/06/14/Kafka/wps151.jpg" alt="img"> </p>
+<p>（6）增加分区数</p>
+<p>bin&#x2F;kafka-topics.sh –alter –topic tpc_1 –partitions 3 –zookeeper node1:2181</p>
+<p><img src="/2023/06/14/Kafka/wps152.jpg" alt="img"> </p>
+<p>（7）配置topic参数</p>
+<p>添加</p>
+<p>bin&#x2F;kafka-configs.sh –zookeeper node1:2181 –entity-type topics –entity-name tpc_1 –alter –add-config compression.type&#x3D;gzip</p>
+<p><img src="/2023/06/14/Kafka/wps153.jpg" alt="img"> </p>
+<p>（8）删除配置参数</p>
+<p>bin&#x2F;kafka-configs.sh –zookeeper node1:2181 –entity-type topics –entity-name tpc_1 –alter –delete-config compression.type</p>
+<p><img src="/2023/06/14/Kafka/wps154.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Kafka/wps155.jpg" alt="img"> </p>
+<p>（9）消费消息</p>
+<p>bin&#x2F;kafka-console-consumer.sh –bootstrap-server node1:9092, node2:9092, node1:9092 –topic tpc_1 –from-beginning</p>
+<p><img src="/2023/06/14/Kafka/wps156.jpg" alt="img"> </p>
+<p>（10）配置管理kafka-configs</p>
+<p>添加topic级别参数</p>
+<p>bin&#x2F;kafka-configs.sh –zookeeper node1:2181 –alter –entity-type topics –entity-name tpc_2 –add-config cleanup.policy&#x3D;compact , max.message.bytes&#x3D;10000</p>
+<p><img src="/2023/06/14/Kafka/wps157.jpg" alt="img"> </p>
+<p>3、Kafka Java API开发</p>
+<p>producer生产者</p>
+<p>（1）引入 maven 依赖</p>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<p>&lt;project xmlns&#x3D;”<a target="_blank" rel="noopener" href="http://maven.apache.org/POM/4.0.0">http://maven.apache.org/POM/4.0.0</a>“</p>
+<p>​     xmlns:xsi&#x3D;”<a target="_blank" rel="noopener" href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>“</p>
+<p>​     xsi:schemaLocation&#x3D;”<a target="_blank" rel="noopener" href="http://maven.apache.org/POM/4.0.0">http://maven.apache.org/POM/4.0.0</a> <a target="_blank" rel="noopener" href="http://maven.apache.org/xsd/maven-4.0.0.xsd%22%3E">http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</a></p>
+<p>  <modelVersion>4.0.0</modelVersion></p>
+<p>  <groupId>org.example</groupId></p>
+<p>  <artifactId>rgzn_kafka</artifactId></p>
+<p>  <version>1.0-SNAPSHOT</version></p>
+  <dependencies>
+
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>org.apache.kafka</groupId></p>
+<p>​      <artifactId>kafka-clients</artifactId></p>
+<p>​      <version>2.0.0</version></p>
+<p>​    </p>
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>org.apache.kafka</groupId></p>
+<p>​      <artifactId>kafka_2.11</artifactId></p>
+<p>​      <version>2.2.0</version></p>
+<p>​    </p>
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>org.slf4j</groupId></p>
+<p>​      <artifactId>slf4j-simple</artifactId></p>
+<p>​      <version>1.7.25</version></p>
+<p>​      <scope>compile</scope></p>
+<p>​    </p>
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>org.apache.commons</groupId></p>
+<p>​      <artifactId>commons-lang3</artifactId></p>
+<p>​      <version>3.10</version></p>
+<p>​    </p>
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>org.apache.flume</groupId></p>
+<p>​      <artifactId>flume-ng-core</artifactId></p>
+<p>​      <version>1.9.0</version></p>
+<p>​    </p>
+<p>​    <!-- https://mvnrepository.com/artifact/redis.clients/jedis --></p>
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>redis.clients</groupId></p>
+<p>​      <artifactId>jedis</artifactId></p>
+<p>​      <version>3.3.0</version></p>
+<p>​    </p>
+<p>​    <dependency></dependency></p>
+<p>​      <groupId>junit</groupId></p>
+<p>​      <artifactId>junit</artifactId></p>
+<p>​      <version>4.12</version></p>
+<p>​      <scope>compile</scope></p>
+<p>​    </p>
+  </dependencies>
+
+  <repositories>
+
+<p>​    <repository></repository></p>
+<p>​      <id>nexus-aliyun</id></p>
+<p>​      <name>Nexus aliyun</name></p>
+<p>​      <layout>default</layout></p>
+<p>​      <url><a target="_blank" rel="noopener" href="http://maven.aliyun.com/nexus/content/groups/public">http://maven.aliyun.com/nexus/content/groups/public</a></url></p>
+<p>​      <snapshots></snapshots></p>
+<p>​        <enabled>false</enabled></p>
+<p>​        <updatePolicy>never</updatePolicy></p>
+<p>​      </p>
+<p>​      <releases></releases></p>
+<p>​        <enabled>true</enabled></p>
+<p>​        <updatePolicy>never</updatePolicy></p>
+<p>​      </p>
+<p>​    </p>
+  </repositories>
+
+  <pluginRepositories>
+
+<p>​    <pluginRepository></pluginRepository></p>
+<p>​      <id>ali-plugin</id></p>
+<p>​      <url><a target="_blank" rel="noopener" href="http://maven.aliyun.com/nexus/content/groups/public/">http://maven.aliyun.com/nexus/content/groups/public/</a></url></p>
+<p>​      <snapshots></snapshots></p>
+<p>​        <enabled>false</enabled></p>
+<p>​        <updatePolicy>never</updatePolicy></p>
+<p>​      </p>
+<p>​      <releases></releases></p>
+<p>​        <enabled>true</enabled></p>
+<p>​        <updatePolicy>never</updatePolicy></p>
+<p>​      </p>
+<p>​    </p>
+  </pluginRepositories>
+
+  <build>
+
+<p>​    <plugins></plugins></p>
+<p>​      <!-- 指定编译java的插件 --></p>
+<p>​      <plugin></plugin></p>
+<p>​        <groupId>org.apache.maven.plugins</groupId></p>
+<p>​        <artifactId>maven-compiler-plugin</artifactId></p>
+<p>​        <version>3.5.1</version></p>
+<p>​        <configuration></configuration></p>
+<p>​          <source>1.8</p>
+<p>​          <target>1.8</target></p>
+<p>​        </p>
+<p>​      </p>
+<p>​      <!-- 指定编译scala的插件 --></p>
+<p>​      <plugin></plugin></p>
+<p>​        <groupId>net.alchim31.maven</groupId></p>
+<p>​        <artifactId>scala-maven-plugin</artifactId></p>
+<p>​        <version>3.2.2</version></p>
+<p>​        <executions></executions></p>
+<p>​          <execution></execution></p>
+<p>​            <goals></goals></p>
+<p>​              <goal>compile</goal></p>
+<p>​              <goal>testCompile</goal></p>
+<p>​            </p>
+<p>​            <configuration></configuration></p>
+<p>​              <args></args></p>
+<p>​                <arg>-dependencyfile</arg></p>
+<p>​                <arg>${project.build.directory}&#x2F;.scala_dependencies</arg></p>
+<p>​              </p>
+<p>​            </p>
+<p>​          </p>
+<p>​        </p>
+<p>​      </p>
+<p>​      <!--  把依赖jar中的用到的类，提取到自己的jar中 --></p>
+<p>​      <plugin></plugin></p>
+<p>​        <groupId>org.apache.maven.plugins</groupId></p>
+<p>​        <artifactId>maven-assembly-plugin</artifactId></p>
+<p>​        <version>2.6</version></p>
+<p>​        <configuration></configuration></p>
+<p>​          <archive></archive></p>
+<p>​            <manifest></manifest></p>
+<p>​              <mainClass>cn.doitedu.loggen.entry.GenAppLog</mainClass></p>
+<p>​            </p>
+<p>​          </p>
+<p>​          <descriptorRefs></descriptorRefs></p>
+<p>​            <descriptorRef>jar-with-dependencies</descriptorRef></p>
+<p>​          </p>
+<p>​        </p>
+<p>​        <!--下面是为了使用 mvn package命令，如果不加则使用mvn assembly--></p>
+<p>​        <executions></executions></p>
+<p>​          <execution></execution></p>
+<p>​            <id>make-assemble</id></p>
+<p>​            <phase>package</phase></p>
+<p>​            <goals></goals></p>
+<p>​              <goal>single</goal></p>
+<p>​            </p>
+<p>​          </p>
+<p>​        </p>
+<p>​      </p>
+<p>​    </p>
+  </build>
+
+
+
+<p><img src="/2023/06/14/Kafka/wps158.png" alt="img"> </p>
+<p>（2）运行</p>
+<p><img src="/2023/06/14/Kafka/wps159.jpg" alt="img"> </p>
+<p>4、consumer生产者</p>
+<p>package ccjz;</p>
+<p>&#x2F;**</p>
+<p> * @BelongsProject: kafka-group</p>
+<p> * @BelongsPackage: ccjz</p>
+<p> * @CreateTime: 2023-05-28  14:47</p>
+<p> * @Description: TODO</p>
+<p> * @Version: 1.0</p>
+<p> *&#x2F;</p>
+<p>import org.apache.kafka.clients.consumer.*;</p>
+<p>import org.apache.kafka.common.TopicPartition;</p>
+<p>import org.apache.kafka.common.serialization.StringDeserializer;</p>
+<p>import java.time.Duration;</p>
+<p>import java.util.Arrays;</p>
+<p>import java.util.Collection;</p>
+<p>import java.util.Properties;</p>
+<p>import java.util.Set;</p>
+<p>public class ConsumerSeekOffset {</p>
+<p>  public static void main(String[] args) {</p>
+<p>​    Properties props &#x3D; new Properties();</p>
+<p>​    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());</p>
+<p>props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,”node1:9092,node2:9092,node3:9092”);</p>
+<p>​    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,”earliest”);</p>
+<p>​    props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,true);</p>
+<p>​    props.put(ConsumerConfig.GROUP_ID_CONFIG,”g1”);</p>
+<p>​    &#x2F;&#x2F;创建kafka实例对象</p>
+<p>​    KafkaConsumer&lt;String, String&gt; kafkaConsumer &#x3D; new KafkaConsumer&lt;String, String&gt;(props);</p>
+<p>​    &#x2F;&#x2F;订阅主题</p>
+<p>​    kafkaConsumer.subscribe(Arrays.asList(“tpc_1”));</p>
+<p>​    &#x2F;&#x2F;先拉取一次消息</p>
+<p>​    kafkaConsumer.poll(Duration.ofMillis(10000));</p>
+<p>​    &#x2F;&#x2F;先看看被分配了哪些topic中的分区</p>
+<p>​    Set<TopicPartition> assignment &#x3D; kafkaConsumer.assignment();</TopicPartition></p>
+<p>​    &#x2F;&#x2F;对于被分配的分区，全部统一定位到offset&#x3D;100的位置成为初始偏移量</p>
+<p>​    for (TopicPartition topicPartition : assignment) {</p>
+<p>​      kafkaConsumer.seek(topicPartition,100);</p>
+<p>​    }</p>
+<p>​    while (true){</p>
+<p>​      ConsumerRecords&lt;String, String&gt; records &#x3D; kafkaConsumer.poll(Duration.ofMillis(Long.MAX_VALUE));</p>
+<p>​      for (ConsumerRecord&lt;String, String&gt; record : records) {</p>
+<p>​        &#x2F;&#x2F; 做一些业务处理</p>
+<p>​        System.out.println(record.key() + “,”</p>
+<p>​            + record.value() +”,”</p>
+<p>​            +record.topic() + “,”</p>
+<p>​            +record.partition()+ “,”</p>
+<p>​            +record.offset());</p>
+<p>​        System.out.println(“———————-分割线—————————-“);</p>
+<p>​      }</p>
+<p>​    }</p>
+<p>  }</p>
+<p>}</p>
+<p>运行结果：</p>
+<p><img src="/2023/06/14/Kafka/wps160.png" alt="img"></p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/14/Kafka/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Zookeeper" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/14/Zookeeper/" target="_blank">Zookeeper</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/14/Zookeeper/" class="archive-article-date">
+        <time datetime="2023-06-14T05:41:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-14</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p><strong>Zookeeper</strong></p>
+<p>1、 安装前需要安装好jdk</p>
+<p><img src="/2023/06/14/Zookeeper/wps89.jpg" alt="img"> </p>
+<p>2、 检测集群时间是否同步</p>
+<p><img src="/2023/06/14/Zookeeper/wps90.jpg" alt="img"> </p>
+<p>3、 检测防火墙是否关闭</p>
+<p><img src="/2023/06/14/Zookeeper/wps91.jpg" alt="img"> </p>
+<p>4、检测主机ip映射有没有配置</p>
+<p><img src="/2023/06/14/Zookeeper/wps92.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps93.jpg" alt="img"> </p>
+<p>在 node1 主机上，解压 zookeeper 的压缩包到&#x2F;export&#x2F;server 路径下去，然后准备进行安装</p>
+<p>cd &#x2F;export&#x2F;software</p>
+<p>tar -zxvf zookeeper.tar.gz -C &#x2F;export&#x2F;server&#x2F;</p>
+<p><img src="/2023/06/14/Zookeeper/wps94.jpg" alt="img"> </p>
+<p>（1） 进入server路径下，将此文件设置软连接上传到 node2 和 node3 里面。 </p>
+<p>cd &#x2F;export&#x2F;server&#x2F; ln -s zookeeper&#x2F; zookeeper</p>
+<p><img src="/2023/06/14/Zookeeper/wps95.jpg" alt="img"> </p>
+<p>（2）修改环境变量（3台zookeeper都要修改）</p>
+<p>vi &#x2F;etc&#x2F;profile</p>
+<p><img src="/2023/06/14/Zookeeper/wps96.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps97.jpg" alt="img"> </p>
+<p>（3）使用 source &#x2F;etc&#x2F;profile 将上述配置进行保存</p>
+<p><img src="/2023/06/14/Zookeeper/wps98.jpg" alt="img"> </p>
+<p>5、修改 Zookeeper 配置文件</p>
+<p>（1） 通过 cd &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;conf&#x2F; 进入到 conf 目录下进行操作。</p>
+<p><img src="/2023/06/14/Zookeeper/wps99.jpg" alt="img"> </p>
+<p>（2）通过cp zoo_sample.cfg zoo.cfg 命令进行对“zoo_sample.cfg”文件的复制转移</p>
+<p><img src="/2023/06/14/Zookeeper/wps100.jpg" alt="img"> </p>
+<p>6、创建一个名为“zkdatas”的新目录</p>
+<p>mkdir -p &#x2F;export&#x2F;data&#x2F;zookeeper&#x2F;zkdatas&#x2F;</p>
+<p><img src="/2023/06/14/Zookeeper/wps101.jpg" alt="img"> </p>
+<p>（1） vim zoo.cfg配置相应的环境</p>
+<p><img src="/2023/06/14/Zookeeper/wps102.jpg" alt="img"> </p>
+<p>（2）在 node1 主机的&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas&#x2F;这个路径下创建一个文件，文件名为 myid ,文件内容为 1</p>
+<p><img src="/2023/06/14/Zookeeper/wps103.jpg" alt="img"> </p>
+<p>7、在 node1 主机上，将安装包分发到其他机器</p>
+<p>(1) 第一台机器上面执行以下两个命令</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;</p>
+<p>scp -r &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.6&#x2F; root@node2:&#x2F;export&#x2F;server&#x2F;</p>
+<p>(2)	scp -r &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.6&#x2F; root@node3:&#x2F;export&#x2F;server&#x2F;</p>
+<p><img src="/2023/06/14/Zookeeper/wps104.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps105.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps106.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps107.jpg" alt="img"> </p>
+<p>8、第二台机器上建立软连接, 并修改 myid 的值为 2</p>
+<p>（1）cd &#x2F;export&#x2F;server&#x2F;</p>
+<p>（2）ln -s zookeeper-3.4.6&#x2F; zookeeper</p>
+<p>（3）echo 2 &gt; &#x2F;export&#x2F;data&#x2F;zookeeper&#x2F;zkdatas&#x2F;yid</p>
+<p><img src="/2023/06/14/Zookeeper/wps108.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps109.jpg" alt="img"> </p>
+<p>9、第三台机器上建立软连接, 并修改 myid 的值为 3</p>
+<p>（1）cd &#x2F;export&#x2F;server&#x2F;</p>
+<p>（2）ln -s zookeeper-3.4.6&#x2F; zookeeper</p>
+<p>（3）echo 3 &gt; &#x2F;export&#x2F;data&#x2F;zookeeper&#x2F;zkdatas&#x2F;myid</p>
+<p><img src="/2023/06/14/Zookeeper/wps110.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps111.png" alt="img"> </p>
+<p>10、三台机器分别启动zookeeper服务</p>
+<p>（1）三台机器分别执行</p>
+<p>&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start</p>
+<p><img src="/2023/06/14/Zookeeper/wps112.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps113.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps114.jpg" alt="img"> </p>
+<p>（2）三台主机分别查看启动状态</p>
+<p>&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh status</p>
+<p><img src="/2023/06/14/Zookeeper/wps115.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps116.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps117.jpg" alt="img"> </p>
+<p>11、启动（每台机器） zkServer.sh start 或者编写一个脚本来批量启动所有机器：</p>
+<p>(1) 方法 1：</p>
+<p><img src="/2023/06/14/Zookeeper/wps118.png" alt="img"> </p>
+<p>(2) 方法 2：</p>
+<p>1、创建&#x2F;export&#x2F;server&#x2F;start&#x2F;zk_start 目录 mkdir &#x2F;export&#x2F;shell</p>
+<p><img src="/2023/06/14/Zookeeper/wps119.jpg" alt="img"> </p>
+<p>2、编辑创建 zk.sh</p>
+<p>vim zkall.sh</p>
+<p><img src="/2023/06/14/Zookeeper/wps120.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps121.jpg" alt="img"> </p>
+<p>3、编写shell 脚本</p>
+<p>#!&#x2F;bin&#x2F;bash</p>
+<p>case $1 in</p>
+<p>“start”){</p>
+<p>​	for i in node1 node2 node3</p>
+<p>​	do</p>
+<p>​		echo ———- zookeeper $i 启动 ————</p>
+<p>​		ssh $i “&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start”</p>
+<p>​	done</p>
+<p>};;</p>
+<p>“stop”){</p>
+<p>​	for i in node1 node2 node3</p>
+<p>​	do</p>
+<p>​		echo ———- zookeeper $i 停止 ———— </p>
+<p>​		ssh $i “&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh stop”</p>
+<p>​	done</p>
+<p>};;</p>
+<p>“status”){</p>
+<p>​	for i in node1 node2 node3</p>
+<p>​	do</p>
+<p>​		echo ———- zookeeper $i 状态 ———— </p>
+<p>​		ssh $i “&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh status”</p>
+<p>​	done</p>
+<p>};;</p>
+<p><img src="/2023/06/14/Zookeeper/wps122.jpg" alt="img"></p>
+<p>4、配置zk脚本环境变量</p>
+<p><img src="/2023/06/14/Zookeeper/wps123.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps124.jpg" alt="img"></p>
+<p>5、zookeeper的环境变量</p>
+<p><img src="/2023/06/14/Zookeeper/wps125.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps126.jpg" alt="img"> </p>
+<p>6、让环境变量生效</p>
+<p><img src="/2023/06/14/Zookeeper/wps127.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps128.jpg" alt="img"> </p>
+<p>7、启动测试</p>
+<p><img src="/2023/06/14/Zookeeper/wps129.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps130.jpg" alt="img"> </p>
+<p>方法3：</p>
+<p><img src="/2023/06/14/Zookeeper/wps131.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps132.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps133.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps134.jpg" alt="img"> </p>
+<p>配置文件中参数说明:</p>
+<p>tickTime这个时间是作为zookeeper服务器之间或客户端与服务器之间维持心跳的时间间隔,也就是说每个tickTime时间就会发送一个心跳。</p>
+<p>initLimit这个配置项是用来配置zookeeper接受客户端（这里所说的客户端不是用户连接zookeeper服务器的客户端,而是zookeeper服务器集群中连接到leader的follower 服务器）初始化连接时最长能忍受多少个心跳时间间隔数。</p>
+<p>当已经超过10个心跳的时间（也就是tickTime）长度后 zookeeper 服务器还没有收到客户端的返回信息,那么表明这个客户端连接失败。总的时间长度就是 10*2000&#x3D;20秒。</p>
+<p>syncLimit这个配置项标识leader与follower之间发送消息,请求和应答时间长度,最长不能超过多少个tickTime的时间长度,总的时间长度就是5*2000&#x3D;10秒。</p>
+<p>dataDir顾名思义就是zookeeper保存数据的目录,默认情况下zookeeper将写数据的日志文件也保存在这个目录里；</p>
+<p>clientPort这个端口就是客户端连接Zookeeper服务器的端口,Zookeeper会监听这个端口接受客户端的访问请求；</p>
+<p>server.A&#x3D;B:C:D中的A是一个数字,表示这个是第几号服务器,B是这个服务器的IP地址，C第一个端口用来集群成员的信息交换,表示这个服务器与集群中的leader服务器交换信息的端口，D是在leader挂掉时专门用来进行选举leader所用的端口。</p>
+<p><img src="/2023/06/14/Zookeeper/wps135.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Zookeeper/wps136.jpg" alt="img"> </p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/14/Zookeeper/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Sqoop" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/14/Sqoop/" target="_blank">Sqoop</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/14/Sqoop/" class="archive-article-date">
+        <time datetime="2023-06-14T05:28:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-14</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p><strong>Sqoop</strong></p>
+<p>1、sqoop安装</p>
+<p>（1）上传sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz安装包并解压、创建软连接</p>
+<p>tar xzf sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz</p>
+<p>ln -s sqoop-1.4.6.bin__hadoop-2.0.4-alpha sqoop</p>
+<p><img src="/2023/06/14/Sqoop/wps36.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps37.jpg" alt="img"> </p>
+<p>（2）修改配置文件：</p>
+<p>vim &#x2F;etc&#x2F;profile</p>
+<p>#SQOOP_HOME</p>
+<p>export SQOOP_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;sqoop</p>
+<p>export PATH&#x3D;$PATH:$SQOOP_HOME&#x2F;bin</p>
+<p>cd $SQOOP_HOME&#x2F;conf</p>
+<p>mv sqoop-env-template.sh sqoop-env.sh</p>
+<p><img src="/2023/06/14/Sqoop/wps38.jpg" alt="img"> </p>
+<p>（3）进入sqoop-env.sh修改配置文件</p>
+<p>export HADOOP_COMMON_HOME&#x3D; &#x2F;export&#x2F;server&#x2F;hadoop</p>
+<p>export HADOOP_MAPRED_HOME&#x3D; &#x2F;export&#x2F;server&#x2F;hadoop</p>
+<p>export HIVE_HOME&#x3D; &#x2F;export&#x2F;server&#x2F;hive</p>
+<p><img src="/2023/06/14/Sqoop/wps39.jpg" alt="img"> </p>
+<p>（4）加入mysql的jdbc驱动包</p>
+<p>cp &#x2F;export&#x2F;server&#x2F;hive&#x2F;lib&#x2F;mysql-connector-java-5.1.32.jar $SQOOP_HOME&#x2F;lib&#x2F;</p>
+<p><img src="/2023/06/14/Sqoop/wps40.jpg" alt="img"> </p>
+<p>（5）验证启动</p>
+<p>bin&#x2F;sqoop list-databases \</p>
+<p> –connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F; \</p>
+<p> –username root –password hadoop</p>
+<p><img src="/2023/06/14/Sqoop/wps41.jpg" alt="img"> </p>
+<p>2、sqoop导入</p>
+<p>（1）在mysql中创建数据库userdb，创建数据库创建三张表: emp雇员表、emp_add雇员地址表、emp_conn雇员联系表.</p>
+<p><img src="/2023/06/14/Sqoop/wps42.jpg" alt="img"> </p>
+<p>（2）从MySQL数据库服务器中的emp表导入HDFS。</p>
+<p>1）<em><strong>*#example1-mysql-hdfs-start*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–delete-target-dir \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;sqoopresult \</p>
+<p>–table emp –m 1</p>
+<p><img src="/2023/06/14/Sqoop/wps43.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps44.jpg" alt="img"> </p>
+<p>2）<em><strong>*#example2-mysql-hdfs-terminated*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;sqoopresult2 \</p>
+<p>–fields-terminated-by ‘\t’ \</p>
+<p>–table emp –m 1 </p>
+<p><img src="/2023/06/14/Sqoop/wps45.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps46.jpg" alt="img"> </p>
+<p>3）#example3-mysql-hdfs-split</p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;sqoopresult3 \</p>
+<p>–fields-terminated-by ‘\t’ \</p>
+<p>–split-by id \</p>
+<p>–table emp –m 2</p>
+<p><img src="/2023/06/14/Sqoop/wps47.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps48.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps49.jpg" alt="img"> </p>
+<p>（3）全量导入mysql表数据到HIVE</p>
+<p><em><strong>*#example4-mysql-hive*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table emp_conn \</p>
+<p>–hive-import \</p>
+<p>–m 1 \</p>
+<p>–hive-database sqoop_test;</p>
+<p><img src="/2023/06/14/Sqoop/wps50.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps51.jpg" alt="img"> </p>
+<p>（4）导入表数据子集</p>
+<p>#example5-mysql-hdfs-where</p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–where “city &#x3D;’sec-bad’” \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;wherequery \</p>
+<p>–table emp_add –m 1</p>
+<p><img src="/2023/06/14/Sqoop/wps52.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps53.jpg" alt="img"> </p>
+<p>（5）导入表数据子集(query查询)</p>
+<p><em><strong>*#example6-mysql-hdfs-query*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;wherequery2 \</p>
+<p>–query ‘select id,name,deg from emp WHERE  id&gt;1203 and $CONDITIONS’ \</p>
+<p>–split-by id \</p>
+<p>–fields-terminated-by ‘\001’ \</p>
+<p>–m 2</p>
+<p><img src="/2023/06/14/Sqoop/wps54.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps55.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps56.jpg" alt="img"></p>
+<p>（6)Append模式增量导入</p>
+<p><em><strong>*#example8-1-mysql-hdfs-append*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;appendresult \</p>
+<p>–table emp –m 1</p>
+<p><img src="/2023/06/14/Sqoop/wps57.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps58.jpg" alt="img"></p>
+<p>（7)实现增量的导入:</p>
+<p>#example8-2-mysql-hdfs-append</p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table emp –m 1 \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;appendresult \</p>
+<p>–incremental append \</p>
+<p>–check-column id \</p>
+<p>–last-value 1205</p>
+<p><img src="/2023/06/14/Sqoop/wps59.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps60.jpg" alt="img"></p>
+<p>（8)Lastmodified模式增量导入</p>
+<p>1）首先创建一个customer表，指定一个时间戳字段：</p>
+<p>create table customertest(id int,name varchar(20),last_mod timestamp default current_timestamp on update current_timestamp);</p>
+<p><img src="/2023/06/14/Sqoop/wps61.jpg" alt="img"> </p>
+<p>2）插入如下记录:</p>
+<p>insert into customertest(id,name) values(1,’neil’);</p>
+<p>insert into customertest(id,name) values(2,’jack’);</p>
+<p>insert into customertest(id,name) values(3,’martin’);</p>
+<p>insert into customertest(id,name) values(4,’tony’);</p>
+<p>insert into customertest(id,name) values(5,’eric’);</p>
+<p><img src="/2023/06/14/Sqoop/wps62.jpg" alt="img"> </p>
+<p>3）此时执行sqoop指令将数据导入hdfs:</p>
+<p><em><strong>*#example9-1-mysql-hdfs-Lastmodified*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;lastmodifiedresult \</p>
+<p>–table customertest –m 1</p>
+<p><img src="/2023/06/14/Sqoop/wps63.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps64.jpg" alt="img"> </p>
+<p>4）再次插入一条数据进入customertest表</p>
+<p>insert into customertest(id,name) values(6,’james’)</p>
+<p><img src="/2023/06/14/Sqoop/wps65.jpg" alt="img"> </p>
+<p>5）使用incremental的方式进行增量的导入:</p>
+<p><em><strong>*#example9-2-mysql-hdfs-Lastmodified*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table customertest \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;lastmodifiedresult \</p>
+<p>–check-column last_mod \</p>
+<p>–incremental lastmodified \</p>
+<p>–last-value “2019-05-28 18:42:06” \</p>
+<p>–m 1 \</p>
+<p>–append</p>
+<p><img src="/2023/06/14/Sqoop/wps66.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps67.jpg" alt="img"> </p>
+<p>（9）Lastmodified模式:append、merge-key</p>
+<p>1）我们去更新 id为1的name字段。</p>
+<p>update customertest set name &#x3D; ‘Neil’ where id &#x3D; 1;</p>
+<p><img src="/2023/06/14/Sqoop/wps68.jpg" alt="img"> </p>
+<p>2）更新 id为1的name字段。</p>
+<p><em><strong>*#example10-mysql-hdfs-merge-key*</strong></em></p>
+<p>bin&#x2F;sqoop import \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table customertest \</p>
+<p>–target-dir &#x2F;sqoop&#x2F;lastmodifiedresult \</p>
+<p>–check-column last_mod \</p>
+<p>–incremental lastmodified \</p>
+<p>–last-value “2019-05-28 18:42:06” \</p>
+<p>–m 1 \</p>
+<p>–merge-key id</p>
+<p><img src="/2023/06/14/Sqoop/wps69.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps70.jpg" alt="img"> </p>
+<p>3、sqoop导出</p>
+<p>（1）在HDFS文件系统中“&#x2F;emp&#x2F;”目录的下创建一个文件emp_data.txt：</p>
+<p>mkdir &#x2F;export&#x2F;data&#x2F;sqoop-data&#x2F;emp&#x2F;</p>
+<p>vim emp_data.txt</p>
+<p>1201,gopal,manager,50000,TP</p>
+<p>1202,manisha,preader,50000,TP</p>
+<p>1203,kalil,php dev,30000,AC</p>
+<p>1204,prasanth,php dev,30000,AC</p>
+<p>1205,kranthi,admin,20000,TP</p>
+<p>1206,satishp,grpdes,20000,GR</p>
+<p><img src="/2023/06/14/Sqoop/wps71.jpg" alt="img"> </p>
+<p>（2）手动创建mysql中的目标表</p>
+<p>use userdb;</p>
+<p>create table employee ( </p>
+<p>  id int not null primary key, </p>
+<p>  name varchar(20), </p>
+<p>  deg varchar(20),</p>
+<p>  salary int,</p>
+<p>  dept varchar(10));</p>
+<p><img src="/2023/06/14/Sqoop/wps72.jpg" alt="img"> </p>
+<p>（3）执行导出命令</p>
+<p><em><strong>*#example10-hdfs-mysql-export*</strong></em></p>
+<p>bin&#x2F;sqoop export \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table employee1 \</p>
+<p>–columns id,name,deg,salary,dept \</p>
+<p>–export-dir &#x2F;sqoop&#x2F;emp_data&#x2F;</p>
+<p><img src="/2023/06/14/Sqoop/wps73.jpg" alt="img"> </p>
+<p>（4）更新导出(updateonly模式）</p>
+<p>在HDFS文件系统中&#x2F;sqoop&#x2F;updateonly_1&#x2F;目录的下创建一个文件updateonly_1.txt</p>
+<p>1201,gopal,manager,50000</p>
+<p>1202,manisha,preader,50000</p>
+<p>1203,kalil,php dev,30000</p>
+<p><img src="/2023/06/14/Sqoop/wps74.jpg" alt="img"></p>
+<p>（5)手动创建mysql中的目标表</p>
+<p>USE userdb;</p>
+<p>CREATE TABLE updateonly ( </p>
+<p>  id INT NOT NULL PRIMARY KEY, </p>
+<p>  name VARCHAR(20), </p>
+<p>  deg VARCHAR(20),</p>
+<p>  salary INT);</p>
+<p><img src="/2023/06/14/Sqoop/wps75.jpg" alt="img"> </p>
+<p>（6）执行全部导出操作</p>
+<p><em><strong>*#example11-1-hdfs-mysql-export-updateonly*</strong></em></p>
+<p>bin&#x2F;sqoop export \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table updateonly \</p>
+<p>–export-dir &#x2F;sqoop&#x2F;updateonly_1&#x2F;</p>
+<p><img src="/2023/06/14/Sqoop/wps76.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps77.jpg" alt="img"></p>
+<p>（7)新增一个文件updateonly_2.txt：修改了前三条数据并且新增了一条记录</p>
+<p>1201,gopal,manager,1212</p>
+<p>1202,manisha,preader,1313</p>
+<p>1203,kalil,php dev,1414</p>
+<p>1204,allen,java,1515</p>
+<p><img src="/2023/06/14/Sqoop/wps78.jpg" alt="img"> </p>
+<p>（8）执行更新导出</p>
+<p><em><strong>*#example11-2-hdfs-mysql-export-updateonly*</strong></em></p>
+<p>bin&#x2F;sqoop export \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table updateonly \</p>
+<p>–export-dir &#x2F;sqoop&#x2F;updateonly_2 \</p>
+<p>–update-key id \</p>
+<p>–update-mode updateonly</p>
+<p><img src="/2023/06/14/Sqoop/wps79.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps80.jpg" alt="img"></p>
+<p>（9)在HDFS &#x2F;sqoop&#x2F;allowinsert_1&#x2F;目录的下创建一个文件allowinsert_1.txt</p>
+<p>1201,gopal,manager,50000</p>
+<p>1202,manisha,preader,50000</p>
+<p>1203,kalil,php dev,30000</p>
+<p><img src="/2023/06/14/Sqoop/wps81.jpg" alt="img"></p>
+<p>（10)手动创建mysql中的目标表</p>
+<p>USE userdb;</p>
+<p>CREATE TABLE allowinsert ( </p>
+<p>  id INT NOT NULL PRIMARY KEY, </p>
+<p>  name VARCHAR(20), </p>
+<p>  deg VARCHAR(20),</p>
+<p>  salary INT);</p>
+<p><img src="/2023/06/14/Sqoop/wps82.jpg" alt="img"></p>
+<p>（11)执行全部导出操作</p>
+<p><em><strong>*#example12-1-hdfs-mysql-export-allowinsert*</strong></em></p>
+<p>bin&#x2F;sqoop export \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root \</p>
+<p>–password hadoop \</p>
+<p>–table allowinsert \</p>
+<p>–export-dir &#x2F;sqoop&#x2F;allowinsert_1&#x2F;</p>
+<p><img src="/2023/06/14/Sqoop/wps83.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps84.jpg" alt="img"> </p>
+<p>（12）创建文件allowinsert_2.txt。修改前三条数据并且新增了一条记录。上传至 &#x2F;sqoop&#x2F;allowinsert_2&#x2F;目录下</p>
+<p>1201,gopal,manager,1212</p>
+<p>1202,manisha,preader,1313</p>
+<p>1203,kalil,php dev,1414</p>
+<p>1204,allen,java,1515</p>
+<p><img src="/2023/06/14/Sqoop/wps85.jpg" alt="img"> </p>
+<p>（13）执行更新导出</p>
+<p><em><strong>*#example12-2-hdfs-mysql-export-allowinsert*</strong></em></p>
+<p>bin&#x2F;sqoop export \</p>
+<p>–connect jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;userdb \</p>
+<p>–username root –password hadoop \</p>
+<p>–table allowinsert \</p>
+<p>–export-dir &#x2F;sqoop&#x2F;allowinsert_2&#x2F; \</p>
+<p>–update-key id \</p>
+<p>–update-mode allowinsert</p>
+<p><img src="/2023/06/14/Sqoop/wps86.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps87.jpg" alt="img"> </p>
+<p><img src="/2023/06/14/Sqoop/wps88.jpg" alt="img"> </p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/14/Sqoop/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Flume" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -262,7 +1293,7 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    <p><strong>一、</strong> <strong>Flume</strong></p>
+    <p><strong>Flume</strong></p>
 <p>1、 安装flume</p>
 <p>（1）解压安装包apache-flume-1.9.0-bin.tar.gz</p>
 <p>tar zxvf apache-flume-1.9.0-bin.tar.gz</p>
@@ -591,7 +1622,33 @@
   <div class="article-info article-info-index">
     
     
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
     
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
     
     <p class="article-more-link">
@@ -1582,490 +2639,10 @@
 
 
   
-    <article id="post-Git" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
   
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2023/06/09/Git/" target="_blank">Git</a>
-  
-    </h1>
-  
-
-
-  
-  
-<a href="/2023/06/09/Git/" class="archive-article-date">
-        <time datetime="2023-06-09T00:44:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
-</a>
-
-  
-  
-    
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><p>1.安装git</p>
-<p>下载两个软件包、安装</p>
-<p><img src="/2023/06/09/Git/wps75.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps76.jpg" alt="img"> </p>
-<p>2.git初始化</p>
-<p>（1）新建测试文件夹test，创建版本库</p>
-<p><img src="/2023/06/09/Git/wps77.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps78.jpg" alt="img"> </p>
-<p>3.git操作本地仓库</p>
-<p>（1）初始化仓库（以test仓库为例）</p>
-<p><img src="/2023/06/09/Git/wps79.jpg" alt="img"> </p>
-<p>（2）添加文件</p>
-<p>创建helloworld.txt文件</p>
-<p><img src="/2023/06/09/Git/wps80.jpg" alt="img"> </p>
-<p>(3)添加文件、提交到本地仓库</p>
-<p><img src="/2023/06/09/Git/wps81.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps82.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/sx\blog\source_posts\Git\wps83.jpg" alt="img"> </p>
-<p>（4）修改、再次提交文件</p>
-<p>修改文件后,多了一个红色感叹号</p>
-<p><img src="/2023/06/09/Git/wps84.jpg" alt="img"> </p>
-<p>重新提交</p>
-<p><img src="/2023/06/09/Git/wps85.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps86.jpg" alt="img"> </p>
-<p>重复上面步骤</p>
-<p>（5）修改文件但不提交，比较差异</p>
-<p><img src="/2023/06/09/Git/wps87.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps88.jpg" alt="img"> </p>
-<p>（6）查看提交历史记录</p>
-<p><img src="/2023/06/09/Git/wps89.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps90.jpg" alt="img"> </p>
-<p>（7）回退历史版本</p>
-<p><img src="/2023/06/09/Git/wps91.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps92.jpg" alt="img"> </p>
-<p>（8）文件删除</p>
-<p>本地删除与恢复</p>
-<p><img src="/2023/06/09/Git/wps93.jpg" alt="img"> </p>
-<p>从版本库删除，但不删除本地</p>
-<p><img src="/2023/06/09/Git/wps94.jpg" alt="img"> </p>
-<p>4.git操作本地仓库（分支）</p>
-<p>（1）创建分支</p>
-<p><img src="/2023/06/09/Git/wps95.jpg" alt="img"> </p>
-<p>（2）查看分支</p>
-<p><img src="/2023/06/09/Git/wps96.jpg" alt="img">（3)切换分支</p>
-<p><img src="/2023/06/09/Git/wps97.jpg" alt="img">（4)合并分支文件</p>
-<p><img src="/2023/06/09/Git/wps98.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps99.jpg" alt="img"> </p>
-<p>（5）删除分支</p>
-<p>进入到版本分支图中</p>
-<p><img src="/2023/06/09/Git/wps100.jpg" alt="img"> </p>
-<p>5、远程仓库</p>
-<p>（1）创建远程仓库，推送本地代码到远端</p>
-<p><img src="/2023/06/09/Git/wps101.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps102.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps103.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Git/wps104.jpg" alt="img"></p>
-
-    
-
-    
-
-    
-
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-    
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2023/06/09/Git/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Hive" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-  
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2023/06/09/Hive/" target="_blank">Hive</a>
-  
-    </h1>
-  
-
-
-  
-  
-<a href="/2023/06/09/Hive/" class="archive-article-date">
-        <time datetime="2023-06-09T00:30:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
-</a>
-
-  
-  
-    
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <h1 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h1><ol>
-<li>进入官网下载</li>
-</ol>
-<p><img src="/2023/06/09/Hive/wps53.jpg" alt="img"> </p>
-<ol start="2">
-<li>上传安装包</li>
-</ol>
-<p><img src="/2023/06/09/Hive/wps54.jpg" alt="img"> </p>
-<p>3、解压并设置软链接</p>
-<p>tar zxvf apache-hive-3.1.2-bin.tar.gz</p>
-<p><img src="/2023/06/09/Hive/wps55.jpg" alt="img"> </p>
-<p>4、解决hive与hadoop之间guava版本差异</p>
-<p>（1）进入hive目录下</p>
-<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;</p>
-<p><img src="/2023/06/09/Hive/wps56.jpg" alt="img"> </p>
-<p>（2）删除hive的lib路径下的guava-19.0.jar</p>
-<p><img src="/2023/06/09/Hive/wps57.jpg" alt="img"> </p>
-<p>（3）复制hadoop的guava-27.0-jre.jar到hive的lib下</p>
-<p>cp&#x2F;export&#x2F;server&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;common&#x2F;lib&#x2F;guava-27.0-jre.jar .&#x2F;lib&#x2F;</p>
-<p><img src="/2023/06/09/Hive/wps58.jpg" alt="img"></p>
-<p>5.修改配置文件</p>
-<p>（1）hive-env.sh</p>
-<p>进入hive的conf路径下</p>
-<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;con</p>
-<p>移动hive-env.sh.template到hive-env.sh</p>
-<p>mv hive-env.sh.template hive-env.sh</p>
-<p><img src="/2023/06/09/Hive/wps59.jpg" alt="img"> </p>
-<p>编辑hive-env.sh</p>
-<p>vim hive-env.sh</p>
-<p>在尾部加入</p>
-<p>export HADOOP_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;hadoop</p>
-<p>export HIVE_CONF_DIR&#x3D;&#x2F;export&#x2F;server&#x2F;hive&#x2F;conf</p>
-<p>export HIVE_AUX_JARS_PATH&#x3D;&#x2F;export&#x2F;server&#x2F;hive&#x2F;lib</p>
-<p><img src="/2023/06/09/Hive/wps60.jpg" alt="img"> </p>
-<p>（2）hive-site.xml</p>
-<p>vim hive-site.xml</p>
-<p>加入</p>
-<configuration>
-
-<!-- 存储元数据mysql相关配置 -->
-
-<property>
-
-<p>​	<name>javax.jdo.option.ConnectionURL</name></p>
-<p>​	<value>jdbc:mysql:&#x2F;&#x2F;node1:3306&#x2F;hive3?createDatabaseIfNotExist&#x3D;true&amp;useSSL&#x3D;false&amp;useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8</value></p>
-</property>
-
- 
-
-<property>
-
-<p>​	<name>javax.jdo.option.ConnectionDriverName</name></p>
-<p>​	<value>com.mysql.jdbc.Driver</value></p>
-</property>
-
- 
-
-<property>
-
-<p>​	<name>javax.jdo.option.ConnectionUserName</name></p>
-<p>​	<value>root</value></p>
-</property>
-
- 
-
-<property>
-
-<p>​	<name>javax.jdo.option.ConnectionPassword</name></p>
-<p>​	<value>hadoop</value></p>
-</property>
-
- 
-
-<!-- H2S运行绑定host -->
-
-<property>
-
-<p>  <name>hive.server2.thrift.bind.host</name></p>
-<p>  <value>node1</value></p>
-</property>
-
- 
-
-<!-- 远程模式部署metastore metastore地址 -->
-
-<property>
-
-<p>  <name>hive.metastore.uris</name></p>
-<p>  <value>thrift:&#x2F;&#x2F;node1:9083</value></p>
-</property>
-
- 
-
-<!-- 关闭元数据存储授权  --> 
-
-<property>
-
-<p>  <name>hive.metastore.event.db.notification.api.auth</name></p>
-<p>  <value>false</value></p>
-</property>
-
-</configuration>
-
-<p><img src="/2023/06/09/Hive/wps61.jpg" alt="img"> </p>
-<p>6.上传mysql jdbc驱动到hive安装包lib下</p>
-<p><img src="/2023/06/09/Hive/wps62.jpg" alt="img"><br>7.初始化元数据</p>
-<p>cd &#x2F;export&#x2F;server&#x2F;hive&#x2F;</p>
-<p>bin&#x2F;schematool -initSchema -dbType mysql -verbos</p>
-<p><img src="/2023/06/09/Hive/wps63.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Hive/wps64.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Hive/wps65.jpg" alt="img"> </p>
-<p>8.在hdfs创建hive存储目录</p>
-<p>hadoop fs -mkdir &#x2F;tmp</p>
-<p>hadoop fs -mkdir -p &#x2F;user&#x2F;hive&#x2F;warehouse</p>
-<p>hadoop fs -chmod g+w &#x2F;tmp</p>
-<p>hadoop fs -chmod g+w &#x2F;user&#x2F;hive&#x2F;warehouse</p>
-<p><img src="/2023/06/09/Hive/wps66.jpg" alt="img"> </p>
-<p>9、启动</p>
-<p>（1）启动metastore服务</p>
-<p>前台启动</p>
-<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore</p>
-<p><img src="/2023/06/09/Hive/wps67.jpg" alt="img"> </p>
-<p>前台启动开启debug日志</p>
-<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore –hiveconf hive.root.logger&#x3D;DEBUG,console</p>
-<p><img src="/2023/06/09/Hive/wps68.jpg" alt="img"> </p>
-<p>后台启动 进程挂起</p>
-<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service metastore &amp;</p>
-<p><img src="/2023/06/09/Hive/wps69.jpg" alt="img"></p>
-<p>（2)启动hiveserver2服务</p>
-<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive –service hiveserver2 &amp;</p>
-<p><img src="/2023/06/09/Hive/wps70.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Hive/wps71.jpg" alt="img"> </p>
-<p>（3）beeline客户端连接</p>
-<p>拷贝node1安装包到beeline客户端机器上(node3)</p>
-<p>Scp-r&#x2F;export&#x2F;server&#x2F;apache-hive-3.1.2-bin&#x2F; root@node3:&#x2F;export&#x2F;server&#x2F;</p>
-<p><img src="/2023/06/09/Hive/wps72.jpg" alt="img"> </p>
-<p>（4）连接访问</p>
-<p>&#x2F;export&#x2F;server&#x2F;hive&#x2F;bin&#x2F;hive</p>
-<p><img src="/2023/06/09/Hive/wps73.jpg" alt="img"> </p>
-<p><img src="/2023/06/09/Hive/wps74.jpg" alt="img"> </p>
-<p>完成</p>
-
-    
-
-    
-
-    
-
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-    
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2023/06/09/Hive/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-  
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2023/06/08/hello-world/" target="_blank">Hello World</a>
-  
-    </h1>
-  
-
-
-  
-  
-<a href="/2023/06/08/hello-world/" class="archive-article-date">
-        <time datetime="2023-06-08T13:58:56.538Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-08</time>
-</a>
-
-  
-  
-    
-
-  
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-    
-
-    
-
-    
-
-  </div>
-  <div class="article-info article-info-index">
-    
-    
-    
-
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2023/06/08/hello-world/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+    </nav>
   
 
 
@@ -2221,6 +2798,10 @@
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">spark</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
             
             <div class="clearfix"></div>
