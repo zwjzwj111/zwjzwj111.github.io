@@ -6,17 +6,34 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://zwjzwj111.github.io">
-  <title>Category: 工具 | Hexo</title>
+  <title>kafka中Eagle运维监控 | Hexo</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://zwjzwj111.github.io/categories/%E5%B7%A5%E5%85%B7/page/2/index.html">
+  <meta name="description" content="Eagle 一、概述   Kafka-eagle是一个为了简化开发者和服务工程师维护Kafka集群工作的监控管理工具。这个管理工具可以很容易地发现分布在集群中的哪些topic分布不均匀，或者是分区在整个集群分布不均匀的的情况。它支持管理多个集群、选择副本、副本重新分配以及创建Topic。同时，这个管理工具还可以快速浏览整个集群。 二、安装部署 1、环境需求 需要安装JDK、ZooKeeper和Ka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka中Eagle运维监控">
+<meta property="og:url" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Eagle 一、概述   Kafka-eagle是一个为了简化开发者和服务工程师维护Kafka集群工作的监控管理工具。这个管理工具可以很容易地发现分布在集群中的哪些topic分布不均匀，或者是分区在整个集群分布不均匀的的情况。它支持管理多个集群、选择副本、副本重新分配以及创建Topic。同时，这个管理工具还可以快速浏览整个集群。 二、安装部署 1、环境需求 需要安装JDK、ZooKeeper和Ka">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps1.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps2.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps3.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps4.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps5.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps8.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps6.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps7.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps10.jpg">
+<meta property="og:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps11.jpg">
+<meta property="article:published_time" content="2023-06-19T02:48:49.000Z">
+<meta property="article:modified_time" content="2023-06-19T03:24:21.017Z">
 <meta property="article:author" content="ZWJ">
+<meta property="article:tag" content="搭建">
+<meta property="article:tag" content="eagle运维监控">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -219,41 +236,167 @@
               class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-kafka中Eagle运维监控" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2023/06/09/Docker/" class="archive-article-date">
-        <time datetime="2023-06-09T00:52:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
-</a>
-
-        </div>
-    	 
+      <header class="article-header">
   
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2023/06/09/Docker/" target="_blank">Docker</a>
   
+    <h1 class="article-title" itemprop="name">
+      kafka中Eagle运维监控
     </h1>
   
 
 
-        <div class="article-info info-on-right">
+  
+  
+        
+        <span id="busuanzi_container_page_pv" style='display:none' class="archive-article-date">
+              <i class="icon-smile icon"></i> 阅读数：<span id="busuanzi_value_page_pv"></span>次
+        </span>
+
+<a href="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/" class="archive-article-date">
+        <time datetime="2023-06-19T02:48:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-19</time>
+</a>
+
+  
+  
+    
+<div style="margin-top:10px;">
+  <span class="post-time">
+    <span class="post-meta-item-icon">
+      <!-- fonts.scss -->
+      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
+      <i class="icon-statistics"></i>
+      <span class="post-meta-item-text"> 字数统计:</span>
+      <span class="post-count">412字</span>
+    </span>
+  </span>
+
+  <span class="post-time">
+    &nbsp; | &nbsp;
+    <span class="post-meta-item-icon">
+      <i class="icon-book icon"></i>
+      <span class="post-meta-item-text"> 阅读时长≈</span>
+      <span class="post-count">1分</span>
+    </span>
+  </span>
+</div>
+
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p><strong>Eagle</strong></p>
+<p>一、概述</p>
+<p>  Kafka-eagle是一个为了简化开发者和服务工程师维护Kafka集群工作的监控管理工具。这个管理工具可以很容易地发现分布在集群中的哪些topic分布不均匀，或者是分区在整个集群分布不均匀的的情况。它支持管理多个集群、选择副本、副本重新分配以及创建Topic。同时，这个管理工具还可以快速浏览整个集群。</p>
+<p>二、安装部署</p>
+<p>1、环境需求</p>
+<p>需要安装JDK、ZooKeeper和Kafka。</p>
+<p>2、上传安装包并解压</p>
+<p><strong>下载地址：<a target="_blank" rel="noopener" href="http://download.kafka-eagle.org/">http://download.kafka-eagle.org/</a></strong><br>下载完成后上传到<code>/export/server开始解压 </code>tar -zxvf  kafka-eagle-web-2.0.2-bin.tar.gz -C ..&#x2F;servers</p>
+<p>cd &#x2F;export&#x2F;servers&#x2F; kafka-eagle-web-2.0.2&#x2F;tar -zxvf kafka-eagle-web-2.0.2bin.tar.gz&#96;</p>
+<p>3、修改环境变量</p>
+<p>JAVA_HOME 和 KE_HOME</p>
+<p>vi &#x2F;etc&#x2F;profile </p>
+<p>export JAVA_HOME&#x3D;&#x2F;usr&#x2F;java&#x2F;jdk1.8</p>
+<p>export PATH&#x3D;$PATH:$JAVA_HOME&#x2F;bin</p>
+<p>export KE_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;kafka-eagle</p>
+<p>export PATH&#x3D;$PATH:$KE_HOME&#x2F;bin</p>
+<p>![1687143621668](E:\sx\blog\source_posts&#x2F;kafka中Eagle运维监控\1687143621668.png</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps1.jpg" alt="img"></p>
+<p>4、 配置 KafkaEagle</p>
+<p>cd &#x2F;export&#x2F;server&#x2F;kafka-eagle&#x2F;conf </p>
+<p>vi system-config.properties</p>
+<p>l 需要更改的地方：</p>
+<p>kafka.eagle.zk.cluster.alias&#x3D;cluster1</p>
+<p>cluster1.zk.list&#x3D;node1:2181,node2:2181,node3:2181</p>
+<p>cluster1.kafka.eagle.broker.size&#x3D;3</p>
+<p>kafka.eagle.url&#x3D;jdbc:sqlite:&#x2F;export&#x2F;data&#x2F;db&#x2F;ke.db</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps2.jpg" alt="img"></p>
+<p>5、启动前需要手动创建&#x2F;export&#x2F;data&#x2F;db目录</p>
+<p>mkdir &#x2F;export&#x2F;data&#x2F;db</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps3.jpg" alt="img"></p>
+<p>6、（1） 启动Eagle</p>
+<p>&#x2F;export&#x2F;server&#x2F;kafka-eagle&#x2F;bin&#x2F;ke.sh start</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps4.jpg" alt="img"></p>
+<p>三、使用Eagle</p>
+<p>1、BScreen 总览</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps5.jpg" alt="img"></p>
+<p>2、话题信息</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps8.jpg" alt="img"></p>
+<p>3、集群信息</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps6.jpg" alt="img"></p>
+<p>4、metrics信息</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps7.jpg" alt="img"></p>
+<p>5、system系统信息</p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps10.jpg" alt="img"> </p>
+<p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps11.jpg" alt="img"></p>
+
+    
+
+    
+    <div class="page-reward">
+      <a href="javascript:void(0);" class="page-reward-btn tooltip-top" target="_self">
+        <div class="tooltip tooltip-east">
+          <span class="tooltip-item">
+            赏
+          </span>
+          <span class="tooltip-content">
+            <span class="tooltip-text">
+              <span class="tooltip-inner">
+                <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i
+                    class="icon icon-quo-right"></i></p>
+                <div class="reward-box">
+                  
+                  <div class="reward-box-item">
+                    <img class="reward-img" src="/img/alipay.jpg">
+                    <span class="reward-type">支付宝</span>
+                  </div>
+                  
+                  
+                  <div class="reward-box-item">
+                    <img class="reward-img" src="/img/weixin.png">
+                    <span class="reward-type">微信</span>
+                  </div>
+                  
+                </div>
+              </span>
+            </span>
+          </span>
+        </div>
+      </a>
+    </div>
+    
+
+    
+    <div class="declare"> 
+      <ul class="post-copyright">
+        <li>
+          <strong>本文作者：</strong>
+          ZWJ
+        </li>
+        <li>
+          <strong>本文链接：</strong>
+          <a href="http://zwjzwj111.github.io/2023/06/19/kafka中Eagle运维监控/" title="kafka中Eagle运维监控" target="_blank">http://zwjzwj111.github.io/2023/06/19/kafka中Eagle运维监控/</a>
+        </li>
+        
+        <li>
+          <strong>版权声明： </strong>
           
+          本博客所有文章除特别声明外，均采用 <a href="https://github.com/JoeyBling/hexo-theme-yilia-plus/blob/master/LICENSE" rel="external nofollow" target="_blank">MIT</a> 许可协议。转载请注明出处！
+        </li>
+        
+      </ul>
+    </div>
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -263,13 +406,13 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eagle运维监控</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+    
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -282,137 +425,162 @@
 	</div>
 
 
+    
+
+    
+    
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <!-- <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a> -->
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://zwjzwj111.github.io/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/" alt="微信分享二维码"> -->
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+
+    
+    <div class="clearfix"></div>
+  </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2023/06/09/Git/" class="archive-article-date">
-        <time datetime="2023-06-09T00:44:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
-</a>
 
+
+<nav id="article-nav">
+  
+  
+    <a href="/2023/06/14/Kafka/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Kafka</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
+
+
+<div id="SOHUCS" sid="kafka中Eagle运维监控" ></div> 
+<script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
+<script type="text/javascript">
+    window.changyan.api.config({
+        appid: "true",
+        conf: "true"
+    });
+</script>
+</script>
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname =
+    'true'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+  </script>
+  <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by
+      Disqus.</a></noscript>
+</section>
+
+
+
+
+  <div id="giteement-ctn"></div>
   
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2023/06/09/Git/" target="_blank">Git</a>
+    <!-- <link rel="stylesheet" href="https://giteement.oss-cn-beijing.aliyuncs.com/wd-discuss.css"> -->
+    <!-- <script src="https://giteement.oss-cn-beijing.aliyuncs.com/discuss_hexo.js"></script> -->
+    <link rel="stylesheet" href="https://giteement.oss-cn-beijing.aliyuncs.com/default.css">
+    <script src="https://giteement.oss-cn-beijing.aliyuncs.com/giteement.browser.js"></script>
   
-    </h1>
-  
+  <script>
+  <!-- id: "kafka中Eagle运维监控" -->
+  var giteement = new Giteement({
+    id: '20230619104849',
+    owner: '',
+    repo: '',
+    backcall_uri: '',
+    oauth_uri: 'https://cors-anywhere.herokuapp.com/https://gitee.com/oauth/token',
+    oauth: {
+      client_id: '',
+      client_secret: ''
+    },
+  })
+  giteement.render('giteement-ctn')
+  </script>
 
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
-        		</li>
-      		
-		</ul>
-	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2023/06/09/Hive/" class="archive-article-date">
-        <time datetime="2023-06-09T00:30:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
-</a>
-
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2023/06/09/Hive/" target="_blank">Hive</a>
-  
-    </h1>
-  
 
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/categories/%E5%B7%A5%E5%85%B7/">&amp;laquo; Prev</a><a class="page-number" href="/categories/%E5%B7%A5%E5%85%B7/">1</a><span class="page-number current">2</span>
-    </nav>
-  
 
 
           </div>
@@ -453,10 +621,10 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
 		root: "/",

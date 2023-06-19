@@ -233,6 +233,224 @@
 
 
   
+    <article id="post-Docker" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+  
+  
+    <h1 itemprop="name">
+	
+	  <a class="article-title" href="/2023/06/09/Docker/" target="_blank">Docker</a>
+  
+    </h1>
+  
+
+
+  
+  
+<a href="/2023/06/09/Docker/" class="archive-article-date">
+        <time datetime="2023-06-09T00:52:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-09</time>
+</a>
+
+  
+  
+    
+
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><p>Docker是一种构建在LXC之上，基于进程容器的轻量级虚拟化解决方案，实现了应用程序级别的资源隔离。通过Docker技术，开发者把应用以及依赖包封装到一个镜像中，可以发布到Linux或Windows机器上。</p>
+<p>Docker镜像就像停止运行的容器，镜像由多个层组成，每层叠加之后，从外部看来就如一个独立的对象。镜像内部是一个精简的操作系统（OS），同时还包含应用运行所必须的文件和依赖包。Docker镜像存储在镜像仓库服务（Image Registry）当中。Docker客户端的镜像仓库服务是可配置的，默认使用Docker Hub。镜像仓库服务包含多个镜像仓库（Image Repository）。同样，一个镜像仓库中可以包含多个镜像。</p>
+<p>1、Docker安装</p>
+<p>1.查看linux内核的版本。</p>
+<p><img src="/2023/06/09/Docker/wps105.jpg" alt="img"></p>
+<p>3.更新ubuntu16.04的源。</p>
+<p><img src="/2023/06/09/Docker/wps106.jpg" alt="img"></p>
+<p>4.安装docker。</p>
+<p><img src="/2023/06/09/Docker/wps107.jpg" alt="img"></p>
+<p><img src="/2023/06/09/Docker/wps108.jpg" alt="img">	</p>
+<p>5.查看docker版本。</p>
+<p><img src="/2023/06/09/Docker/wps109.jpg" alt="img"> </p>
+<ol start="6">
+<li>启动docker服务，查看 docker 服务状态。</li>
+</ol>
+<p><img src="/2023/06/09/Docker/wps110.jpg" alt="img"> </p>
+<ol start="7">
+<li>测试运行docker Hello World。</li>
+</ol>
+<p><img src="/2023/06/09/Docker/wps111.jpg" alt="img"> </p>
+<p>8.停止 docker 服务。</p>
+<p><img src="/2023/06/09/Docker/wps112.jpg" alt="img"> </p>
+<p>二、Docker使用</p>
+<p>1.镜像使用</p>
+<p>(1)列出镜像列表。</p>
+<p><img src="/2023/06/09/Docker/wps113.jpg" alt="img"> </p>
+<p>(2)拉取镜像（在本地主机上使用一个不存在的镜像前预先下载它）。</p>
+<p><img src="/2023/06/09/Docker/wps114.jpg" alt="img"> </p>
+<p>(3)搜索镜像。</p>
+<p><img src="/2023/06/09/Docker/wps115.jpg" alt="img"> </p>
+<p>实验2.docker 容器的使用</p>
+<p>(1)查看docker客户端的所有命令使用方法。</p>
+<p><img src="/2023/06/09/Docker/wps116.jpg" alt="img"> </p>
+<p>(2)了解Docker运行时的命令使用方法。</p>
+<p><img src="/2023/06/09/Docker/wps117.jpg" alt="img"> </p>
+<p>(3)列出后台运行的容器列表。</p>
+<p><img src="/2023/06/09/Docker/wps118.jpg" alt="img"> </p>
+<p>(4)通过ubuntu14.04镜像创建一个容器，但不启动它。</p>
+<p><img src="/2023/06/09/Docker/wps119.jpg" alt="img"> </p>
+<p>(5)运行容器，运行成功后在容器中可以使用ubuntu14.04。（-i:以交互模式运行容器，通常与-t同时使用，表示开启了input功能。-t:为容器重新分配一个伪输入终端，通常与-i同时使用，表示开启了连接容器里的终端。ll:查看容器内所有文件。）</p>
+<p><img src="/2023/06/09/Docker/wps120.jpg" alt="img"> </p>
+<p>(6)在docker容器中运行一个Python Flask应用来运行一个web应用。</p>
+<p>a.拉取镜像</p>
+<p><img src="/2023/06/09/Docker/wps121.jpg" alt="img"> </p>
+<p>b.运行容器（-d:让容器在后台运行，-P:将容器内部使用的网络端口映射到我们使用的主机上）</p>
+<p><img src="/2023/06/09/Docker/wps122.jpg" alt="img"> </p>
+<p>c.查看正在运行的容器</p>
+<p><img src="/2023/06/09/Docker/wps123.jpg" alt="img"> </p>
+<p>d.由图可知Docker开放了5000端口映射到主机端口32768 上，可以通过浏览器访问web应用</p>
+<p><img src="/2023/06/09/Docker/wps124.jpg" alt="img"> </p>
+<p>e.查看web应用程序日志（-f:让docker logs像使用tail -f一样来输出容器内部的标准输出）</p>
+<p><img src="/2023/06/09/Docker/wps125.jpg" alt="img"> </p>
+<p>f.停止web应用容器</p>
+<p><img src="/2023/06/09/Docker/wps126.jpg" alt="img"> </p>
+<p>g.移除web应用容器（容器必须是停止状态）</p>
+<p><img src="/2023/06/09/Docker/wps127.jpg" alt="img"> </p>
+<p>3.容器连接</p>
+<p>(1)创建一个python应用的容器。</p>
+<p><img src="/2023/06/09/Docker/wps128.jpg" alt="img"></p>
+<p>(2)将容器内部端口绑定到指定的主机端口（-P:容器内部端口随机映射到主机端口）。</p>
+<p><img src="/2023/06/09/Docker/wps129.jpg" alt="img"></p>
+<p>(3)查看后台正在运行的容器。</p>
+<p><img src="/2023/06/09/Docker/wps130.jpg" alt="img"></p>
+<p>(4)指定容器绑定的网络地址，这样我们就可以通过访问127.0.0.1:5001来访问容器的5000端口。</p>
+<p><img src="/2023/06/09/Docker/wps131.jpg" alt="img"> </p>
+<p>(5)容器命名。</p>
+<p><img src="/2023/06/09/Docker/wps132.jpg" alt="img"> </p>
+<p>4.docker容器间通信</p>
+<p>(1)创建bridge网络 my_net2，指定网段和网关参数。</p>
+<p><img src="/2023/06/09/Docker/wps133.jpg" alt="img"> </p>
+<p>(2)参看网络配置。</p>
+<p><img src="/2023/06/09/Docker/wps134.jpg" alt="img"> </p>
+<p>(3)通过DNS server进行通信。</p>
+<p>a.启动bbox1和bbox2两个容器</p>
+<p><img src="/2023/06/09/Docker/wps135.jpg" alt="img"> </p>
+<p>b.验证bbox2可以ping到bbox1</p>
+<p><img src="/2023/06/09/Docker/wps136.jpg" alt="img"> </p>
+<p>(4)默认的bridge网络无法使用docker DNS，如下。</p>
+<p>a.创建bbox3和bbox4，均连接到bridge网络</p>
+<p><img src="/2023/06/09/Docker/wps137.jpg" alt="img"> </p>
+<p>b.bbox4无法ping到bbox3</p>
+<p><img src="/2023/06/09/Docker/wps138.jpg" alt="img"> </p>
+<p>(5)通过joined容器通信。</p>
+<p>a.创建一个httpd容器，名为web1</p>
+<p><img src="/2023/06/09/Docker/wps139.jpg" alt="img"> </p>
+<p>b.创建busybox容器并通过–network&#x3D;container:web1指定joined容器为web1，并查看busybox容器中的网络配置信息（Container模式就是在运行容器时通过–net指定另一个已经在运行的有单独Network Namespace的容器,与这个容器共享一个Network Namespace。在这种情况下，新建的容器没有自己的网卡，也不会给它分配IP，而是两个容器共享IP和端口空间）</p>
+<p><img src="/2023/06/09/Docker/wps140.jpg" alt="img"> </p>
+<p>c.查看 web1 的网络配置（docker exec命令能够在运行着的容器中执行命令）</p>
+<p><img src="/2023/06/09/Docker/wps141.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Docker/wps142.jpg" alt="img"> </p>
+<p>d.可以看出busybox和web1的网卡mac地址与IP 完全一样，它们共享了相同的网络栈。 因此，busybox可以直接用127.0.0.1访问web1的http 服务</p>
+<p><img src="/2023/06/09/Docker/wps143.jpg" alt="img"> </p>
+<p>5.docker安装Nginx(engine x)</p>
+<p>(1)以后台模式启动一个交互式容器,并将容器的 80 端口映射到主机随机端口。</p>
+<p><img src="/2023/06/09/Docker/wps144.jpg" alt="img"> </p>
+<p>(2)对容器内资源进行更新和升级。</p>
+<p><img src="/2023/06/09/Docker/wps145.jpg" alt="img"> </p>
+<p>(3)在容器内安装Nginx服务（指令中的y&#x3D;yes，表示跳过系统提示，直接安装）</p>
+<p><img src="/2023/06/09/Docker/wps146.jpg" alt="img"> </p>
+<p>(4)在容器内安装文本编辑器vim。</p>
+<p><img src="/2023/06/09/Docker/wps147.jpg" alt="img"> </p>
+<p>(5)在容器中创建静态页面（-p表示创建目录及其下面的子目录）。</p>
+<p><img src="/2023/06/09/Docker/wps148.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Docker/wps149.jpg" alt="img"> </p>
+<p>(6)在容器中编辑Nginx配置文件，修改路径。</p>
+<p><img src="/2023/06/09/Docker/wps150.jpg" alt="img"> </p>
+<p><img src="/2023/06/09/Docker/wps151.jpg" alt="img"> </p>
+<p>(7)在容器中运行Nginx。</p>
+<p><img src="/2023/06/09/Docker/wps152.jpg" alt="img"> </p>
+<p>(8)在容器中查看进程（-e:显示所有进程，-f:全格式显示）。</p>
+<p><img src="/2023/06/09/Docker/wps153.jpg" alt="img"> </p>
+<p>(9)验证网站访问。</p>
+<p>a.用ctrl+p ctrl+q将容器放于后台运行，再用docker ps命令查看后台运行的容器</p>
+<p><img src="/2023/06/09/Docker/wps154.jpg" alt="img"> </p>
+<p>b.访问nginx</p>
+<p><img src="/2023/06/09/Docker/wps155.jpg" alt="img"> </p>
+<p>c.在宿主机的浏览器，通过ubuntun16.04的ip地址和端口访问</p>
+<p><img src="/2023/06/09/Docker/wps156.jpg" alt="img"> </p>
+
+    
+
+    
+
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">搭建</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">spark</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+    
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/工具//" class="article-tag-list-link color3">工具</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+    
+    <p class="article-more-link">
+      <a class="article-more-a" href="/2023/06/09/Docker/">展开全文 >></a>
+    </p>
+    
+
+    
+    <div class="clearfix"></div>
+  </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Git" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -880,6 +1098,10 @@
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">eagle运维监控</a>
               </li>
             
             <div class="clearfix"></div>
