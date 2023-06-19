@@ -265,6 +265,7 @@
     <p><strong>Eagle</strong></p>
 <p>一、概述</p>
 <p>  Kafka-eagle是一个为了简化开发者和服务工程师维护Kafka集群工作的监控管理工具。这个管理工具可以很容易地发现分布在集群中的哪些topic分布不均匀，或者是分区在整个集群分布不均匀的的情况。它支持管理多个集群、选择副本、副本重新分配以及创建Topic。同时，这个管理工具还可以快速浏览整个集群。</p>
+<p>Kafka Eagle所包含的功能有数据面板、数据大屏、主题列表、消费者组、集群详情、监控中心、告警策略、系统管理等功能</p>
 <p>二、安装部署</p>
 <p>1、环境需求</p>
 <p>需要安装JDK、ZooKeeper和Kafka。</p>
@@ -296,6 +297,7 @@
 <p>&#x2F;export&#x2F;server&#x2F;kafka-eagle&#x2F;bin&#x2F;ke.sh start</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps4.jpg" alt="img"></p>
 <p>三、使用Eagle</p>
+<p>该模块包含主题创建、主题管理、主题预览、KSQL查询主题、主题数据写入、主题属性配置等。</p>
 <p>1、BScreen 总览</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps5.jpg" alt="img"></p>
 <p>进入kafka eagle ，显示仪表盘包括以下几个选项：Brokers、Topics、Zookeepers、Consumers、Kafka Brokers Graph</p>
@@ -306,6 +308,12 @@
 <p>Message提供Kafka SQL可以从分区、偏移量、topic名称查数据；</p>
 <p>Mock向指定的topic发送模拟数据；</p>
 <p>Consumer显示当前注册集群的消费组信息;</p>
+<h2 id="数据大屏"><a href="#数据大屏" class="headerlink" title="数据大屏"></a>数据大屏</h2><p>该模块包含展示消费者和生产者当日及最近7天趋势、Kafka集群读写速度、Kafka集群历史总记录等。</p>
+<h2 id="消费者组"><a href="#消费者组" class="headerlink" title="消费者组"></a>消费者组</h2><p>该模块包含监控不同消费者组中的Topic被消费的详情，例如LogSize、Offsets、以及Lag等。同时，支持查看Lag的历史趋势图。</p>
+<h2 id="集群管理"><a href="#集群管理" class="headerlink" title="集群管理"></a>集群管理</h2><p>该模块包含Kafka集群和Zookeeper集群的详情展示，例如Kafka的IP和端口、版本号、启动时间、Zookeeper的Leader和Follower。同时，还支持多Kafka集群切换，以及Zookeeper Client数据查看等功能。</p>
+<h2 id="指标监控"><a href="#指标监控" class="headerlink" title="指标监控"></a>指标监控</h2><p>该模块包含监控Kafka集群和Zookeeper集群的核心指标，包含Kafka的消息发送趋势、消息大小接收与发送趋势、Zookeeper的连接数趋势等。同时，还支持查看Broker的瞬时指标数据。</p>
+<h2 id="告警"><a href="#告警" class="headerlink" title="告警"></a>告警</h2><p>该模块包含告警集群异常和消费者应用Lag异常。同时，支持多种IM告警方式，例如邮件、钉钉、微信、Webhook等。</p>
+<h2 id="系统管理"><a href="#系统管理" class="headerlink" title="系统管理"></a>系统管理</h2><p>该模块包含用户管理，例如创建用户、用户授权、资源管理等。</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps8.jpg" alt="img"></p>
 <p>3、集群信息</p>
 <p>Muti-Cluster显示后台注册的kafka集群，可以同时管理多套kafka集群;</p>
