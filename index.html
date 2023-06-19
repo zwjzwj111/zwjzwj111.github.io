@@ -298,13 +298,25 @@
 <p>三、使用Eagle</p>
 <p>1、BScreen 总览</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps5.jpg" alt="img"></p>
+<p>进入kafka eagle ，显示仪表盘包括以下几个选项：Brokers、Topics、Zookeepers、Consumers、Kafka Brokers Graph</p>
 <p>2、话题信息</p>
+<p>Topic目录下选项可以完成(当前注册集群的)topic新建和topic查询，并且提供kafka SQL查询工具;</p>
+<p>Creat创建topic;</p>
+<p> List:罗列出所有当前注册集群下的所有topic列表，每个topic的分区数、分区列表、创建时间、修改时间、并提供删除选项；</p>
+<p>Message提供Kafka SQL可以从分区、偏移量、topic名称查数据；</p>
+<p>Mock向指定的topic发送模拟数据；</p>
+<p>Consumer显示当前注册集群的消费组信息;</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps8.jpg" alt="img"></p>
 <p>3、集群信息</p>
+<p>Muti-Cluster显示后台注册的kafka集群，可以同时管理多套kafka集群;</p>
+<p>ZKCli将ZKCli移植到网页上执行;</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps6.jpg" alt="img"></p>
 <p>4、metrics信息</p>
+<p>Metric通过kafka的JMX端口，实现了Kafka的监控指标，并图表化展示，监控指标包括读写的TPS、比特数、分区间同步的比特数等；</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps7.jpg" alt="img"></p>
 <p>5、system系统信息</p>
+<p>用户管理提供三种角色(用户群)：admin、开发组、游客，可以分别编辑设定每种用户群的权限；</p>
+<p>Kafka Eagle的mysql表在Kafka-Eagle配置文件system-config.properties中添加mysql的信息后，KE会自动在对应的模式内创建元数据表；</p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps10.jpg" alt="img"> </p>
 <p><img src="/2023/06/19/kafka%E4%B8%ADEagle%E8%BF%90%E7%BB%B4%E7%9B%91%E6%8E%A7/wps11.jpg" alt="img"></p>
 
